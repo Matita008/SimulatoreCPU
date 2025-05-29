@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Implementation-Title: Simulatore
-Implementation-Version: 1.0
-Main-Class: io.matita08.Main
-
