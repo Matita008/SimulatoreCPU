@@ -16,6 +16,10 @@ public abstract class Value {
    
    public abstract Value set(int n);
    
+   public void set(Value v) {
+      set(v.get());
+   }
+   
    public abstract Value add(Value v2);
    
    public abstract Value sub(Value v2);

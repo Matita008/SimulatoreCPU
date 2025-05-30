@@ -47,7 +47,10 @@ public class Execution {
    
    public static void execute() {
       ControlUnit.opcode.action.accept(ControlUnit.currentCycles);
-      if((ControlUnit.nextCycles = ControlUnit.currentCycles - 1) == 0) ControlUnit.next = Phase.Fetch;
+      if((ControlUnit.nextCycles = ControlUnit.currentCycles - 1) == 0) {
+         ControlUnit.next = Phase.Fetch;
+         ControlUnit.opcode = Operation.Unknown;
+      }
       
    }
    

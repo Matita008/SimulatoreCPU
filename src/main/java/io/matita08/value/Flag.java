@@ -34,8 +34,11 @@ public class Flag {
    public final boolean equals(Object o) {
       if(this == o) return true;
       if(!(o instanceof Flag flag)) return false;
-      
       return defined == flag.defined && value == flag.value;
+   }
+   
+   public final boolean equals(boolean o) {
+      return defined && value == o;
    }
    
    @Override
