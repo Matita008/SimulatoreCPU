@@ -8,8 +8,8 @@ public class DoubleValue extends Value {
    private Value[] v;
    
    public DoubleValue() {
-      v = new Value[Constants.AddressSize];
-      for (int i = 0; i < Constants.AddressSize; i++) {
+      v = new Value[Constants.getAddressSize()];
+      for (int i = 0; i < Constants.getAddressSize(); i++) {
          v[i] = Value.getNew();
       }
    }
@@ -24,7 +24,7 @@ public class DoubleValue extends Value {
    }
    
    public static String unset() {
-      return SingleValue.unset().repeat(Constants.AddressSize);
+      return SingleValue.unset().repeat(Constants.getAddressSize());
    }
    
    @Override

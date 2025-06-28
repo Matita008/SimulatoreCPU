@@ -35,7 +35,7 @@ public abstract class Value {
       return getSigned();
    }
    
-   public static String unset(){return "";}
+   public static String unset(){return "?";}
    
    public abstract int getSigned();
    

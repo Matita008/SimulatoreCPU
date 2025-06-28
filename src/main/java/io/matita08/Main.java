@@ -5,13 +5,12 @@ import io.matita08.logic.Execution;
 import io.matita08.value.SingleValue;
 
 import javax.swing.SwingUtilities;
-import java.lang.reflect.InvocationTargetException;
 
 public class Main {
    public static void main(String[] args) {
-      //System.out.println("Hello world!");
       //Value v= new DoubleValue(1);
       //System.out.println(Registers.getMC(v).getSigned());
+      if(Constants.init(args)) return;
       SwingUtilities.invokeLater(Display::init);
       Registers.setMC(0, new SingleValue(2));
       Registers.setMC(1, new SingleValue(7));
@@ -27,7 +26,3 @@ public class Main {
       System.out.println(Registers.pc());
    }
 }
-//TODO Display.java
-//TODO /\ and others (ex Enums) move to a single different package
-//TODO
-//TODO

@@ -7,7 +7,7 @@ import io.matita08.value.*;
 import java.util.ArrayList;
 
 public final class Registers {
-   private static final ArrayList<Value> MC = new ArrayList<>(Constants.MC_Size);
+   private static final ArrayList<Value> MC = new ArrayList<>(Constants.getMC_Size());
    private static final DoubleValue pc = new DoubleValue(0);
    public static int modFlag = 0;
    
@@ -24,7 +24,7 @@ public final class Registers {
    private static Flag zero = new Flag();
    
    static {
-      for (int i = 0; i < Constants.MC_Size; i++) {
+      for (int i = 0; i < Constants.getMC_Size(); i++) {
          MC.add(Value.getNew());
       }
    }
@@ -90,7 +90,7 @@ public final class Registers {
    }
    
    public static Value getMC(int pos) {
-      if(pos >= Constants.MC_Size) return Value.nullValue;
+      if(pos >= Constants.getMC_Size()) return Value.nullValue;
       while(MC.size() <= pos) MC.add(Value.getNew());
       return MC.get(pos);
    }
@@ -100,7 +100,7 @@ public final class Registers {
    }
    
    public static void setMC(int index, Value val) {
-      if(index >= Constants.MC_Size) return;
+      if(index >= Constants.getMC_Size()) return;
       MC.set(index, val);
       modFlag = 1 | modFlag;
    }

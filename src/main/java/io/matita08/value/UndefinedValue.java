@@ -7,17 +7,17 @@ public class UndefinedValue extends Value implements Cloneable{
    }
    
    private int rand() {
-      return (int)(Math.random() * Constants.Value_max * 2);
+      return (int)(Math.random() * Constants.getValue_max() * 2);
    }
    
    @Override
    public int getSigned() {
-      return rand() - Constants.Value_max;
+      return rand() - Constants.getValue_max();
    }
    
    @Override
    public int getUnsigned() {
-      return rand() % Constants.Value_max;
+      return rand() % Constants.getValue_max();
    }
    
    @SuppressWarnings("MethodDoesntCallSuperMethod")

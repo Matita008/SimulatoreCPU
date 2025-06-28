@@ -28,3 +28,5 @@ build/
 launch4jOut/
 #gradle dir
 .gradle/
+
+/.idea/vcs.xml

@@ -17,7 +17,7 @@ public class Operation {
 
    static {
       try {
-         Class<?> c = Class.forName(Constants.OperationEnumName);
+         Class<?> c = Class.forName(Constants.getOperationEnumName());
          Object allField = c.getField("all").get(null);
          Field wr = c.getField("wrapper");
          int sz = Array.getLength(allField);
@@ -29,17 +29,17 @@ public class Operation {
          Unknown = (Operation)c.getMethod("getUnknown").invoke(null);
          
       } catch (ClassNotFoundException e) {
-         throw new AssertionError("Constants.OperationEnumName is set to an invalid class name: " + Constants.OperationEnumName, e);
+         throw new AssertionError("Constants.OperationEnumName is set to an invalid class name: " + Constants.getOperationEnumName(), e);
       } catch (NoSuchFieldException e) {
-         throw new AssertionError("Constants.OperationEnumName is set to a class who doesn't have a static all[] field: " + Constants.OperationEnumName, e);
+         throw new AssertionError("Constants.OperationEnumName is set to a class who doesn't have a static all[] field: " + Constants.getOperationEnumName(), e);
       } catch (IllegalAccessException e) {
-         throw new InternalError("Constants.OperationEnumName or one of its component is not accessible while it should: " + Constants.OperationEnumName,e);
+         throw new InternalError("Constants.OperationEnumName or one of its component is not accessible while it should: " + Constants.getOperationEnumName(),e);
       } catch (NullPointerException npe) {
-         throw new AssertionError("Constants.OperationEnumName is set to a class who doesn't have a static all[] field or doesn't have getHalt/getUnknown method: " + Constants.OperationEnumName, npe);
+         throw new AssertionError("Constants.OperationEnumName is set to a class who doesn't have a static all[] field or doesn't have getHalt/getUnknown method: " + Constants.getOperationEnumName(), npe);
       } catch (InvocationTargetException e) {
          throw new RuntimeException(e);
       } catch (NoSuchMethodException e) {
-         throw new AssertionError("Constants.OperationEnumName is set to a class who doesn't have a static getUnknown and static getHalt field: " + Constants.OperationEnumName, e);
+         throw new AssertionError("Constants.OperationEnumName is set to a class who doesn't have a static getUnknown and static getHalt field: " + Constants.getOperationEnumName(), e);
       }
    }
    
@@ -65,7 +65,7 @@ public class Operation {
    }
    
    public static int getAddressSize() {
-      return Constants.AddressSize;
+      return Constants.getAddressSize();
    }
    
    public static void readPointer(int cycle) {

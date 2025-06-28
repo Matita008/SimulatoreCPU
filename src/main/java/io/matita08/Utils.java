@@ -5,17 +5,19 @@ import io.matita08.value.Value;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Utils {
    public static final Random rng = new Random();
    private final static ThreadGroup tg = new ThreadGroup("Utils-threads");
+   private final static AtomicInteger tc = new AtomicInteger(1);
    
    private Utils() {throw new RuntimeException("You're an idiot");}
    
    public static void loadMC(File f) {runOnNewThread(()->loadMCImpl(f));}
    
    public static Thread runOnNewThread(Runnable run) {
-      Thread t = new Thread(tg, run);
+      Thread t = new Thread(tg, run, tg.getName() + "-" + tc.incrementAndGet());
       t.start();
       return t;
    }
