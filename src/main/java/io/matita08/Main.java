@@ -21,7 +21,7 @@ public class Main {
       Registers.setMC(5, new SingleValue(15));
       Display.update();
       Registers.setAcc(new SingleValue(5));
-      Execution.step(10 * 3);
+      Execution.step();
       Display.update();
       System.out.println(Registers.getRegB());
       System.out.println(Registers.pc());

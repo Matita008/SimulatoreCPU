@@ -65,7 +65,7 @@ public class Display extends JFrame {
       createBusComponents();
       main.add(busLabels, cfg);
       
-      tb = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Memoria centrale");
+      tb = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Central Memory");
       tb.setTitleJustification(TitledBorder.LEFT);
       tb.setTitlePosition(TitledBorder.TOP);
       b = BorderFactory.createCompoundBorder(new EmptyBorder(5, 5, 5, 5), tb);
@@ -119,8 +119,8 @@ public class Display extends JFrame {
    }
    
    private void createMCComponents() {
-      ((JLabel)MC.add(new JLabel("Indirizzi  "))).setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.BLACK));
-      MC.add(new JLabel(" Valori"));
+      ((JLabel)MC.add(new JLabel("Addresses  "))).setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.BLACK));
+      MC.add(new JLabel(" Values"));
       for (int i = 0; i < Constants.MC_Size; i++) {
          JLabel lb = new JLabel(i + " ", SwingConstants.TRAILING);
          lb.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.BLACK));

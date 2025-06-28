@@ -33,9 +33,9 @@ public class Operation {
       } catch (NoSuchFieldException e) {
          throw new AssertionError("Constants.OperationEnumName is set to a class who doesn't have a static all[] field: " + Constants.OperationEnumName, e);
       } catch (IllegalAccessException e) {
-         throw new InternalError(e);
+         throw new InternalError("Constants.OperationEnumName or one of its component is not accessible while it should: " + Constants.OperationEnumName,e);
       } catch (NullPointerException npe) {
-         throw new AssertionError("Constants.OperationEnumName is set to a class who doesn't have a static all[] field or doesn't have a wrapper object: " + Constants.OperationEnumName, npe);
+         throw new AssertionError("Constants.OperationEnumName is set to a class who doesn't have a static all[] field or doesn't have getHalt/getUnknown method: " + Constants.OperationEnumName, npe);
       } catch (InvocationTargetException e) {
          throw new RuntimeException(e);
       } catch (NoSuchMethodException e) {

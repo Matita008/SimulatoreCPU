@@ -26,3 +26,5 @@ replay_pid*
 #other directories
 build/
 launch4jOut/
+#gradle dir
+.gradle/
