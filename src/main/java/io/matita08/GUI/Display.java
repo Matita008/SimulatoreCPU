@@ -1,6 +1,6 @@
 package io.matita08.GUI;
 
-import io.matita08.Constants;
+import io.matita08.*;
 import io.matita08.GUI.listeners.Load;
 import io.matita08.logic.Execution;
 import io.matita08.value.*;
@@ -9,11 +9,14 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
+import java.util.*;
 
 public class Display extends JFrame {
    public static Display instance;
    
+   /**
+    * The thread where all swing operation are executed
+    */
    private static Thread swingThread;
    
    //JPanels attached directly to the main panel
@@ -34,6 +37,13 @@ public class Display extends JFrame {
    JLabel RegB;
    JLabel PSW;//Program status word //Contains the various flags as a bitmask value
    
+   JPanel CU;
+   JLabel instruction;
+   JLabel phase;
+   JLabel nextPhase;
+   JLabel cycle;
+   JLabel remaining;
+   
    //Control panel related components
    JButton load;
    
@@ -49,98 +59,151 @@ public class Display extends JFrame {
       this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
       this.setVisible(true);
       swingThread = Thread.currentThread();
+      Arrays.stream(main.getComponents()).forEach(e ->{System.out.println(" x: " + e.getX() + ", " + e.getWidth() + ", y: " + e.getY() + ", " + e.getHeight());});
+   }
+   
+   /**
+    * Create a black line border with a title in the top-left and a padding of 5px
+    *
+    * @param title The border title
+    * @return a new border
+    */
+   private Border titleBorder(String title) {
+      TitledBorder tb = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), title);
+      tb.setTitleJustification(TitledBorder.LEFT);
+      tb.setTitlePosition(TitledBorder.TOP);
+      return BorderFactory.createCompoundBorder(new EmptyBorder(5, 5, 5, 5), tb);
+   }
+   
+   private Border displayBorder() {
+      Border b = BorderFactory.createLineBorder(new Color(0.15f, 0.15f,0.15f));
+      return BorderFactory.createCompoundBorder(new EmptyBorder(3, 1, 2, 5), b);
    }
    
    private void createMainComponents() {
-      GridBagConstraints cfg = new GridBagConstraints();
-      Border b;
-      TitledBorder tb;
+      GridBagConstraints gridPosition = new GridBagConstraints();
+      Border border;
       
+      border = titleBorder("CPU");
       CPU = new JPanel();
-      cfg.gridx = 0;      //start column
-      cfg.gridy = 0;      //start row
-      cfg.gridheight = 3; //row span
-      cfg.gridwidth = 5;  //column span
-      cfg.ipadx = 2;      //padding (x-axis)
-      cfg.ipady = 3;      //padding (y-axis)
-      cfg.weighty = 0.6;  //distribution of extra space (y-axis)
-      cfg.fill = GridBagConstraints.BOTH;
+      CPU.setBorder(border);
+      gridPosition.gridx = 0;      //start column
+      gridPosition.gridy = 0;      //start row
+      gridPosition.gridheight = 4; //row span
+      gridPosition.gridwidth = 5;  //column span
+      gridPosition.ipadx = 2;      //padding (x-axis)
+      gridPosition.ipady = 3;      //padding (y-axis)
+      gridPosition.weighty = 0.6;  //distribution of extra space (y-axis)
+      gridPosition.fill = GridBagConstraints.BOTH;
       createCPUComponents();
-      main.add(CPU, cfg);
+      main.add(CPU, gridPosition);
       
       busLabels = new JPanel();
-      cfg.gridx = 5;      //start column
-      cfg.gridy = 0;      //start row
-      cfg.gridheight = 3; //row span
-      cfg.gridwidth = 1;  //column span
-      cfg.ipadx = 2;      //padding (x-axis)
-      cfg.ipady = 2;      //padding (y-axis)
-      cfg.weighty = 0;    //distribution of extra space (y-axis)
+      gridPosition.gridx = 5;      //start column
+      gridPosition.gridy = 0;      //start row
+      gridPosition.gridheight = 3; //row span
+      gridPosition.gridwidth = 1;  //column span
+      gridPosition.ipadx = 2;      //padding (x-axis)
+      gridPosition.ipady = 2;      //padding (y-axis)
+      gridPosition.weighty = 0;    //distribution of extra space (y-axis)
       createBusComponents();
-      main.add(busLabels, cfg);
+      main.add(busLabels, gridPosition);
       
-      tb = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), "Central Memory");
-      tb.setTitleJustification(TitledBorder.LEFT);
-      tb.setTitlePosition(TitledBorder.TOP);
-      b = BorderFactory.createCompoundBorder(new EmptyBorder(5, 5, 5, 5), tb);
+      border = titleBorder("Central Memory");
       MC = new JPanel();
       MC.setLayout(new GridLayout(0, 2, 2, 0));//DONT FREAKING TOUCH ME, 0 IS ANY NUMBER OF ROWS (ENTRIES) YOU FREAAKY MORON DUMB!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       MC.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 0, Color.lightGray));
       //MC.setPreferredSize(new Dimension(150,400));
       JScrollPane scroll = new JScrollPane(MC, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-      scroll.setBorder(b);
+      scroll.setBorder(border);
       scroll.setPreferredSize(new Dimension(150, 250));
       scroll.setMinimumSize(new Dimension(75, 50));
-      cfg.gridx = 6;      //start column
-      cfg.gridy = 0;      //start row
-      cfg.gridheight = 6; //row span
-      cfg.gridwidth = 2;  //column span
-      cfg.ipadx = 5;      //padding (x-axis)
-      cfg.ipady = 5;      //padding (y-axis)
-      cfg.weighty = 0.6;  //distribution of extra space (y-axis)
+      gridPosition.gridx = 6;      //start column
+      gridPosition.gridy = 0;      //start row
+      gridPosition.gridheight = 6; //row span
+      gridPosition.gridwidth = 2;  //column span
+      gridPosition.ipadx = 5;      //padding (x-axis)
+      gridPosition.ipady = 5;      //padding (y-axis)
+      gridPosition.weighty = 0.6;  //distribution of extra space (y-axis)
       createMCComponents();
-      main.add(scroll, cfg);
+      main.add(scroll, gridPosition);
       
+      border = titleBorder("Control Panel");
       controlPanel = new JPanel();
-      cfg.gridx = 0;      //start column
-      cfg.gridy = 3;      //start row
-      cfg.gridheight = 3; //row span
-      cfg.gridwidth = 3;  //column span
-      cfg.ipadx = 2;      //padding (x-axis)
-      cfg.ipady = 3;      //padding (y-axis)
-      cfg.weighty = 0.6;  //distribution of extra space (y-axis)
+      controlPanel.setBorder(border);
+      gridPosition.gridx = 0;      //start column
+      gridPosition.gridy = 5;      //start row
+      gridPosition.gridheight = 1; //row span
+      gridPosition.gridwidth = 3;  //column span
+      gridPosition.ipadx = 1;      //padding (x-axis)
+      gridPosition.ipady = 3;      //padding (y-axis)
+      gridPosition.weighty = 0.6;  //distribution of extra space (y-axis)
       createControlPanelComponents();
-      main.add(controlPanel, cfg);
+      main.add(controlPanel, gridPosition);
       
       interfaces = new JPanel();
-      cfg.gridx = 3;      //start column
-      cfg.gridy = 3;      //start row
-      cfg.gridheight = 3; //row span
-      cfg.gridwidth = 3;  //column span
-      cfg.ipadx = 2;      //padding (x-axis)
-      cfg.ipady = 3;      //padding (y-axis)
-      cfg.weighty = 0.6;  //distribution of extra space (y-axis)
+      gridPosition.gridx = 3;      //start column
+      gridPosition.gridy = 3;      //start row
+      gridPosition.gridheight = 3; //row span
+      gridPosition.gridwidth = 3;  //column span
+      gridPosition.ipadx = 2;      //padding (x-axis)
+      gridPosition.ipady = 3;      //padding (y-axis)
+      gridPosition.weighty = 0.6;  //distribution of extra space (y-axis)
       createInterfacesComponents();
-      main.add(interfaces, cfg);
+      main.add(interfaces, gridPosition);
    }
    
    private void createCPUComponents() {
       CPU.add(new JLabel("CPU"));
-      createCPUAdrComponents();
-      createALUComponents();
+      CPU.add(new JLabel("CPUAddr"));
+      CPU.add(new JLabel("ALU"));
       createCUComponents();
    }
    
-   private void createCPUAdrComponents() {
-      CPU.add(new JLabel("CPUAddr"));
-   }
-   
-   private void createALUComponents() {
-      CPU.add(new JLabel("ALU"));
-   }
-   
    private void createCUComponents() {
-      CPU.add(new JLabel("CU"));
+      CU = new JPanel(new GridLayout(6,2,4,2));
+      CU.setBorder(titleBorder("Control Unit"));
+      
+      CU.add(new JLabel("Instruction"));
+      CU.add(new JLabel(" "));
+      
+      instruction = new JLabel();
+      instruction.setBackground(Color.white);
+      instruction.setBorder(displayBorder());
+      CU.add(instruction);
+      CU.add(new JLabel(" "));
+      
+      CU.add(new JLabel("Current Phase"));
+      CU.add(new JLabel("Cycles Total"));
+      
+      phase = new JLabel();
+      phase.setBackground(Color.white);
+      phase.setBorder(displayBorder());
+      CU.add(phase);
+      
+      cycle = new JLabel();
+      cycle.setBackground(Color.white);
+      System.out.println("cycle.isOpaque() = " + cycle.isOpaque());
+      cycle.setOpaque(true);
+      cycle.setBorder(displayBorder());
+      System.out.println("cycle.getInsets() = " + cycle.getInsets());
+      CU.add(cycle);
+      
+      CU.add(new JLabel("Next Phase"));
+      CU.add(new JLabel("Remaining Cycles"));
+      
+      nextPhase = new JLabel();
+      nextPhase.setBackground(Color.white);
+      nextPhase.setBorder(displayBorder());
+      CU.add(nextPhase);
+      
+      remaining = new JLabel();
+      remaining.setBackground(Color.white);
+      remaining.setBorder(displayBorder());
+      CU.add(remaining);
+      
+      CPU.add(CU);
+      cycle.setText("Test");
    }
    
    private void createBusComponents() {
@@ -148,14 +211,12 @@ public class Display extends JFrame {
    }
    
    private void createMCComponents() {
-      JLabel adL = (JLabel)MC.add(new JLabel("Addresses  ", SwingConstants.RIGHT));
-      //adL.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.BLACK));
+      MC.add(new JLabel("Addresses  ", SwingConstants.RIGHT));
       MC.add(new JLabel(" Values", SwingConstants.LEFT));
       for (int i = 0; i < Constants.getMC_Size(); i++) {
          JLabel lb = new JLabel(i + " -> ", SwingConstants.TRAILING);
-         //lb.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.BLACK));
          MC.add(lb);
-         JLabel l = new JLabel(DoubleValue.unset(), SwingConstants.LEFT);
+         JLabel l = new JLabel(SingleValue.unset(), SwingConstants.LEFT);
          MC.add(l);
          MCData.add(l);
       }
@@ -169,19 +230,25 @@ public class Display extends JFrame {
       controlPanel.add(load);
       load.addActionListener(new Load());
       JButton update = new JButton("Update");
-      update.addActionListener(_->Display.update());
+      update.addActionListener((e) -> Display.update());
       controlPanel.add(update);
    }
    
    private void createInterfacesComponents() {
-      interfaces.add(new JLabel("bus thingy"));
+      interfaces.add(new JLabel("bus thingy stuff"));
    }
    
+   /**
+    * Update the GUI
+    * If the current thread is the swing event thread it will get run immediately, else it will wait for the swing thread to execute the update
+    * @see #swingThread
+    */
    public static void update() {
       try {
          if(swingThread == Thread.currentThread()) instance.updateImpl();
          else SwingUtilities.invokeAndWait(()->instance.updateImpl());
       } catch (InterruptedException | InvocationTargetException ex) {
+         //noinspection CallToPrintStackTrace TODO: ?
          ex.printStackTrace();
       }
    }
@@ -202,10 +269,10 @@ public class Display extends JFrame {
          Value v = Registers.getMC(i);
          String s;
          if(v instanceof UndefinedValue) s = UndefinedValue.unset();
-         else {
+         else {   //I don't like the else case being larger than the if one, but inverting them looks so bad, so I'll stick with this abomination
             int n = v.get();
-            if(n < 10) s = " ";
-            //else if(n < 100) s = " ";//if decommented the string in the line above shall have 2 spaces, else only one
+            if(n < 10) s = " ";  //Bad padding logic, idk.
+            //else if(n < 100) s = " ";//if uncommented the string in the line above shall have 2 spaces, else only one
             else s = "";
             s += String.valueOf(n);
          }
@@ -221,12 +288,19 @@ public class Display extends JFrame {
    
    }
    
-   public static void main(String[] args) {
+   /**
+    * Execute this only to test the GUI, the real program starts in {@link io.matita08.Main#main(String[])}
+    */
+   public static void main(String[] args) throws InterruptedException, InvocationTargetException {
       System.out.println("Hello world!");
-      SwingUtilities.invokeLater(Display::init);
+      SwingUtilities.invokeAndWait(Display::init);
    }
    
+   /**
+    * Initialize the GUI
+    */
    public static void init() {
+      if(instance != null) return;  //Ensure only a GUI can be created
       instance = new Display();
    }
 }

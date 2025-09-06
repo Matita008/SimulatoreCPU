@@ -1,7 +1,5 @@
 package io.matita08;
 
-import org.jetbrains.annotations.*;
-
 public final class Constants {
    private Constants() {
       throw new IllegalAccessError("Just why?");
@@ -47,8 +45,7 @@ public final class Constants {
     @param args a String array containing the argument passed to parse
     @return true if the help menu was shown
     */
-   @Contract(pure = true)
-   public static boolean init(@NotNull String[] args) {
+   public static boolean init(String[] args) {
       for (int i = 0; i < args.length; i++) {
          String cur = args[i];
          if(cur.charAt(0) != '-' || "-help".equals(cur) || "-h".equals(cur)) {

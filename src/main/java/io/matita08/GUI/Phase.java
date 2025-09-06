@@ -8,9 +8,12 @@ public enum Phase{
    Decode(Execution::decode),
    Execute(Execution::execute),
    None(()->{});
+   
    private final Runnable action;
+   
    Phase(Runnable action) {
       this.action = action;
    }
+   
    public void run() {action.run();}
 }

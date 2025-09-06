@@ -9,15 +9,28 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class Utils {
    public static final Random rng = new Random();
-   private final static ThreadGroup tg = new ThreadGroup("Utils-threads");
+   /**
+    * {@link ThreadGroup} where temporary task are run
+    */
+   public final static ThreadGroup taskGroup = new ThreadGroup("Utils-threads");
+   /**
+    * Current temporary thread number, it's the same as the number of temporary task scheduled.
+    */
    private final static AtomicInteger tc = new AtomicInteger(1);
    
    private Utils() {throw new RuntimeException("You're an idiot");}
    
    public static void loadMC(File f) {runOnNewThread(()->loadMCImpl(f));}
    
+   /**
+    * Start a new thread in the {@link #taskGroup}
+    *
+    * @param run The task to schedule for running
+    * @return a started {@link Thread}
+    */
+   @SuppressWarnings("UnusedReturnValue")
    public static Thread runOnNewThread(Runnable run) {
-      Thread t = new Thread(tg, run, tg.getName() + "-" + tc.incrementAndGet());
+      Thread t = new Thread(taskGroup, run, taskGroup.getName() + "-" + tc.getAndIncrement());
       t.start();
       return t;
    }
@@ -40,8 +53,10 @@ public class Utils {
             }
             pos++;
          }
-      } catch (FileNotFoundException _) {
+      } catch (FileNotFoundException fnf) {
          System.out.println("The selected file (" + f.getName() + ") doesn't exist or i was unable to open it");
+         //noinspection CallToPrintStackTrace
+         fnf.printStackTrace();
       }
    }
 }
