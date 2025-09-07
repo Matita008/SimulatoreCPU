@@ -30,6 +30,6 @@ launch4jOut/
 .gradle/
 
 #idea files
-/.idea
+.idea/
 
 /.idea/vcs.xml

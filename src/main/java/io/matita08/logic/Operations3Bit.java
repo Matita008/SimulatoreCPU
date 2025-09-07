@@ -7,8 +7,8 @@ import java.util.function.Consumer;
 
 @SuppressWarnings("unused")  //Loaded with reflection
 public enum Operations3Bit {//Using prof default table
-   sto(0, n->{}, 1 + Operation.getAddressSize()),
-   load(1, n->{}, 1 + Operation.getAddressSize()),
+   sto(0, n->{}, 1 + Operation.getAddressSize()),                       //TODO
+   load(1, n->{}, 1 + Operation.getAddressSize()),                      //TODO
    out(2, n->{Registers.setBufOut(Registers.getAcc());}, 1),
    in(3, n->{Registers.setAcc(Registers.getBufIn());}, 1),
    add(4, n->{
@@ -18,7 +18,7 @@ public enum Operations3Bit {//Using prof default table
    set(5, n->Registers.setRegB(Registers.getAcc()), 1),
    jpz(6, n->{
       if(n == Operation.getAddressSize() + 1) {
-         if(Registers.getZero().equals(true)) Registers.pc().add(new SingleValue(2, false));
+         if(Registers.getZero().equals(true)) Registers.pc().add(new SingleValue(2, false)); //TODO
          else Operation.readPointer(n);
       } else if(n != 1) Operation.readPointer(n);
       else {
@@ -26,7 +26,7 @@ public enum Operations3Bit {//Using prof default table
       }
    }, 1 + Operation.getAddressSize()),
    Halt(7, n->{}, 1),
-   Unknown(8, n->{}, 1);
+   Unknown(n->{},1);
    
    public static final Operations3Bit[] all = values();
    public final Operation wrapper;
@@ -35,6 +35,13 @@ public enum Operations3Bit {//Using prof default table
       wrapper = new Operation(opcode, act, cycles, name());
    }
    
+   Operations3Bit(Consumer<Integer> act, int cycles) {
+      wrapper = new Operation(-1, act, cycles, "");
+   }
+   
+   public Operation get() {
+      return wrapper;
+   }
    public static Operation getHalt() {
       return Halt.wrapper;
    }

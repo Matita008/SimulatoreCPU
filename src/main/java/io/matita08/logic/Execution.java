@@ -24,8 +24,8 @@ public class Execution {
    public static boolean step() {
       if(ControlUnit.current == Phase.Execute && ControlUnit.opcode == Operation.Halt) return false;
       ControlUnit.current = ControlUnit.next;
-      ControlUnit.currentCycles = ControlUnit.nextCycles;
       ControlUnit.next.run();
+      ControlUnit.currentCycle--;
       stepped = true;
       SwingUtilities.invokeLater(Display::update);
       return true;
@@ -35,21 +35,22 @@ public class Execution {
       setMarR(Registers.pc().getAndInc());
       Registers.setIr(Registers.getMDR());
       ControlUnit.next = Phase.Decode;
-      ControlUnit.nextCycles = 1;
-      ControlUnit.currentCycles = -1;
+      ControlUnit.currentCycle = 0;
+      ControlUnit.totalCycles = -1;
+      ControlUnit.opcode = Operation.Unknown;
    }
    
    public static void decode() {
       ControlUnit.next = Phase.Execute;
       ControlUnit.opcode = Operation.get(Registers.getIr().get());
-      ControlUnit.nextCycles = ControlUnit.opcode.cycles;
+      ControlUnit.totalCycles = ControlUnit.currentCycle = ControlUnit.opcode.cycles;
+      ControlUnit.currentCycle++;
    }
    
    public static void execute() {
-      ControlUnit.opcode.action.accept(ControlUnit.currentCycles);
-      if((ControlUnit.nextCycles = ControlUnit.currentCycles - 1) == 0) {
+      ControlUnit.opcode.action.accept(ControlUnit.currentCycle);
+      if(ControlUnit.currentCycle == 1) {
          ControlUnit.next = Phase.Fetch;
-         ControlUnit.opcode = Operation.Unknown;
       }
       
    }

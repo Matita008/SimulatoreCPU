@@ -29,7 +29,7 @@ public final class Registers {
       }
    }
    
-   private Registers() {throw new AssertionError("...\nPlease don't\n\nIk you're using reflection\n");}
+   private Registers() { throw new AssertionError("...\nPlease don't\n\nIk you're using reflection\n"); }
    
    public static DoubleValue pc() {
       return pc;
@@ -62,20 +62,20 @@ public final class Registers {
    }
    
    public static Value getAcc() {
-      modFlag = 4 | modFlag;
       return Acc;
    }
    
    public static void setAcc(Value acc) {
+      modFlag = 4 | modFlag;
       Acc = acc;
    }
    
    public static Value getRegB() {
-      modFlag = 4 | modFlag;
       return regB;
    }
    
    public static void setRegB(Value regB) {
+      modFlag = 4 | modFlag;
       Registers.regB = regB;
    }
    
@@ -106,7 +106,7 @@ public final class Registers {
    }
    
    public static void setMC(Value pos, Value val) {
-      if(pos instanceof DoubleValue dv) setMC(pos, dv);
+      if(pos instanceof DoubleValue dv) setMC(dv, val);
    }
    
    public static Value getPointer() {

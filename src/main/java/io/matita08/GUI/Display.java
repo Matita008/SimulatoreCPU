@@ -2,9 +2,10 @@ package io.matita08.GUI;
 
 import io.matita08.*;
 import io.matita08.GUI.listeners.Load;
-import io.matita08.logic.Execution;
+import io.matita08.logic.*;
 import io.matita08.value.*;
 
+import javax.naming.ldap.Control;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -37,7 +38,6 @@ public class Display extends JFrame {
    JLabel RegB;
    JLabel PSW;//Program status word //Contains the various flags as a bitmask value
    
-   JPanel CU;
    JLabel instruction;
    JLabel phase;
    JLabel nextPhase;
@@ -59,7 +59,7 @@ public class Display extends JFrame {
       this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
       this.setVisible(true);
       swingThread = Thread.currentThread();
-      Arrays.stream(main.getComponents()).forEach(e ->{System.out.println(" x: " + e.getX() + ", " + e.getWidth() + ", y: " + e.getY() + ", " + e.getHeight());});
+      //Arrays.stream(main.getComponents()).forEach(e ->{System.out.println(" x: " + e.getX() + ", " + e.getWidth() + ", y: " + e.getY() + ", " + e.getHeight());});
    }
    
    /**
@@ -77,7 +77,18 @@ public class Display extends JFrame {
    
    private Border displayBorder() {
       Border b = BorderFactory.createLineBorder(new Color(0.15f, 0.15f,0.15f));
-      return BorderFactory.createCompoundBorder(new EmptyBorder(3, 1, 2, 5), b);
+      return BorderFactory.createCompoundBorder(b, new EmptyBorder(3, 1, 2, 5));
+   }
+   private JLabel createDisplayBox(){
+      return createDisplayBox(displayBorder());
+   }
+   
+   private JLabel createDisplayBox(Border b) {
+      JLabel l = new JLabel();
+      l.setBackground(Color.white);
+      l.setOpaque(true);
+      l.setBorder(b);
+      return l;
    }
    
    private void createMainComponents() {
@@ -161,49 +172,35 @@ public class Display extends JFrame {
    }
    
    private void createCUComponents() {
-      CU = new JPanel(new GridLayout(6,2,4,2));
+      JPanel CU = new JPanel(new GridLayout(6,2,4,2));
       CU.setBorder(titleBorder("Control Unit"));
       
       CU.add(new JLabel("Instruction"));
-      CU.add(new JLabel(" "));
+      CU.add(new JLabel(" "));//spacer
       
-      instruction = new JLabel();
-      instruction.setBackground(Color.white);
-      instruction.setBorder(displayBorder());
+      instruction = createDisplayBox();
       CU.add(instruction);
-      CU.add(new JLabel(" "));
+      
+      CU.add(new JLabel(" "));//spacer
       
       CU.add(new JLabel("Current Phase"));
       CU.add(new JLabel("Cycles Total"));
       
-      phase = new JLabel();
-      phase.setBackground(Color.white);
-      phase.setBorder(displayBorder());
+      phase = createDisplayBox();
       CU.add(phase);
-      
-      cycle = new JLabel();
-      cycle.setBackground(Color.white);
-      System.out.println("cycle.isOpaque() = " + cycle.isOpaque());
-      cycle.setOpaque(true);
-      cycle.setBorder(displayBorder());
-      System.out.println("cycle.getInsets() = " + cycle.getInsets());
+      cycle = createDisplayBox();
       CU.add(cycle);
       
       CU.add(new JLabel("Next Phase"));
       CU.add(new JLabel("Remaining Cycles"));
       
-      nextPhase = new JLabel();
-      nextPhase.setBackground(Color.white);
-      nextPhase.setBorder(displayBorder());
+      nextPhase = createDisplayBox();
       CU.add(nextPhase);
-      
-      remaining = new JLabel();
-      remaining.setBackground(Color.white);
-      remaining.setBorder(displayBorder());
+      remaining = createDisplayBox();
       CU.add(remaining);
       
       CPU.add(CU);
-      cycle.setText("Test");
+      updateCU();
    }
    
    private void createBusComponents() {
@@ -226,9 +223,11 @@ public class Display extends JFrame {
       JButton step = new JButton("Step");
       step.addActionListener(Execution::step);
       controlPanel.add(step);
+      
       load = new JButton("Load file");
       controlPanel.add(load);
       load.addActionListener(new Load());
+      
       JButton update = new JButton("Update");
       update.addActionListener((e) -> Display.update());
       controlPanel.add(update);
@@ -261,7 +260,19 @@ public class Display extends JFrame {
    }
    
    private void updateCU() {
-   
+      if(ControlUnit.opcode == Operation.Unknown) instruction.setText("");
+      else instruction.setText(ControlUnit.opcode.name.toUpperCase(Locale.ROOT));
+      
+      if(ControlUnit.current == Phase.None) phase.setText("");
+      else phase.setText(ControlUnit.current.name());
+      
+      nextPhase.setText(ControlUnit.next.name());
+      
+      if(ControlUnit.totalCycles == -1) cycle.setText("");
+      else cycle.setText(String.valueOf(ControlUnit.totalCycles));
+      
+      if(ControlUnit.currentCycle == -1) remaining.setText("");
+      else remaining.setText(String.valueOf(ControlUnit.currentCycle));
    }
    
    private void updateMC() {

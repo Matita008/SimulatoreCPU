@@ -16,7 +16,7 @@ public class Load implements ActionListener {
    JFrame f;
    
    public Load() {
-      fc = new JFileChooser();
+      fc = new JFileChooser(System.getProperty("user.dir"));
       fc.setFileFilter(new FileFilter() {//TODO Low priority: can be more clean?
          @Override
          public boolean accept(File f) {
