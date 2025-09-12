@@ -1,5 +1,4 @@
-//TODO LowPriority: maybe better in a data package
-package io.matita08.GUI;
+package io.matita08.data;
 
 import io.matita08.Constants;
 import io.matita08.value.*;
@@ -7,7 +6,7 @@ import io.matita08.value.*;
 import java.util.ArrayList;
 
 public final class Registers {
-   private static final ArrayList<Value> MC = new ArrayList<>(Constants.getMC_Size());
+   private static final ArrayList<Value> MC = new ArrayList<>(Constants.getMCSize());
    private static final DoubleValue pc = new DoubleValue(0);
    public static int modFlag = 0;
    
@@ -21,10 +20,8 @@ public final class Registers {
    private static Value bufIn = Value.getNew();
    private static Value bufOut = Value.getNew();
    
-   private static Flag zero = new Flag();
-   
    static {
-      for (int i = 0; i < Constants.getMC_Size(); i++) {
+      for (int i = 0; i < Constants.getMCSize(); i++) {
          MC.add(Value.getNew());
       }
    }
@@ -90,7 +87,7 @@ public final class Registers {
    }
    
    public static Value getMC(int pos) {
-      if(pos >= Constants.getMC_Size()) return Value.nullValue;
+      if(pos >= Constants.getMCSize()) return Value.nullValue;
       while(MC.size() <= pos) MC.add(Value.getNew());
       return MC.get(pos);
    }
@@ -100,7 +97,7 @@ public final class Registers {
    }
    
    public static void setMC(int index, Value val) {
-      if(index >= Constants.getMC_Size()) return;
+      if(index >= Constants.getMCSize()) return;
       MC.set(index, val);
       modFlag = 1 | modFlag;
    }
@@ -134,11 +131,11 @@ public final class Registers {
       Registers.bufOut = bufOut;
    }
    
-   public static Flag getZero() {
-      return zero;
+   public static boolean getZero() {
+      return Flags.get(FlagsConstants.ZERO);
    }
    
-   public static void setZero(Flag zero) {
-      Registers.zero = zero;
+   public static void setZero(boolean zero) {
+      Flags.set(FlagsConstants.ZERO, zero);
    }
 }

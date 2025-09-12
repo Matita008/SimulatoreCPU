@@ -1,15 +1,12 @@
 package io.matita08.GUI.listeners;
 
 import io.matita08.GUI.Display;
-import io.matita08.GUI.Registers;
 import io.matita08.Utils;
-import io.matita08.value.Value;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import java.awt.event.*;
 import java.io.*;
-import java.util.Scanner;
 
 public class Load implements ActionListener {
    JFileChooser fc;
@@ -32,6 +29,11 @@ public class Load implements ActionListener {
    }
    @Override
    public void actionPerformed(ActionEvent e) {
+      if(f != null) {
+         f.setVisible(true);
+         f.toFront();
+         return;
+      }
       f = new JFrame("Open file");
       f.add(fc);
       f.setVisible(true);

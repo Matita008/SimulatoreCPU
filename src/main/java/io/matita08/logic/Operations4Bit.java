@@ -1,6 +1,6 @@
 package io.matita08.logic;
 
-import io.matita08.GUI.Registers;
+import io.matita08.data.Registers;
 
 import java.util.function.Consumer;
 

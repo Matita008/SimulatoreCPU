@@ -2,10 +2,10 @@ package io.matita08.GUI;
 
 import io.matita08.*;
 import io.matita08.GUI.listeners.Load;
+import io.matita08.data.*;
 import io.matita08.logic.*;
 import io.matita08.value.*;
 
-import javax.naming.ldap.Control;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
@@ -48,7 +48,7 @@ public class Display extends JFrame {
    JButton load;
    
    //MC related components
-   ArrayList<JLabel> MCData = new ArrayList<>(Constants.getMC_Size());
+   ArrayList<JLabel> MCData = new ArrayList<>(Constants.getMCSize());
    
    private Display() {
       super("Simulator");
@@ -290,7 +290,7 @@ public class Display extends JFrame {
    private void createMCComponents() {
       MC.add(new JLabel("Addresses  ", SwingConstants.RIGHT));
       MC.add(new JLabel(" Values", SwingConstants.LEFT));
-      for (int i = 0; i < Constants.getMC_Size(); i++) {
+      for (int i = 0; i < Constants.getMCSize(); i++) {
          JLabel lb = new JLabel(i + " -> ", SwingConstants.TRAILING);
          MC.add(lb);
          JLabel l = new JLabel(SingleValue.unset(), SwingConstants.LEFT);
@@ -364,10 +364,10 @@ public class Display extends JFrame {
     * Function to update the visual part of the Central Memory
     */
    private void updateMC() {
-      for (int i = 0; i < Constants.getMC_Size(); i++) {
+      for (int i = 0; i < Constants.getMCSize(); i++) {
          Value v = Registers.getMC(i);
          String s;
-         if(v instanceof UndefinedValue) s = DoubleValue.unset();
+         if(v instanceof UndefinedSingleValue) s = DoubleValue.unset();
          else {   //I don't like the else case being larger than the if one, but inverting them looks so bad, so I'll stick with this abomination
             int n = v.get();
             if(n < 10) s = " ";  //Bad padding logic, ik.
@@ -383,11 +383,11 @@ public class Display extends JFrame {
     * Function to update a visual part of the CPU
     */
    private void updatePR() {//ir, pc, mdr, mar, pointer
-      PC.setText(Registers.pc().getString());
-      MAR.setText(Registers.getMAR().getString());
-      Pointer.setText(Registers.getPointer().getString());
-      MDR.setText(Registers.getMDR().getString());
-      IR.setText(Registers.getIr().getString());
+      PC.setText(Registers.pc().toString());
+      MAR.setText(Registers.getMAR().toString());
+      Pointer.setText(Registers.getPointer().toString());
+      MDR.setText(Registers.getMDR().toString());
+      IR.setText(Registers.getIr().toString());
    
    }
    

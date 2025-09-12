@@ -1,8 +1,10 @@
 package io.matita08.value;
 
+import io.matita08.Constants;
+
 public abstract class Value {
    
-   @SuppressWarnings("StaticInitializerReferencesSubClass") public static final UndefinedValue nullValue = new UndefinedValue();
+   @SuppressWarnings("StaticInitializerReferencesSubClass") public static final UndefinedSingleValue nullValue = new UndefinedSingleValue();
    
    public static Value getNew() {return nullValue.clone();}
    
@@ -19,7 +21,8 @@ public abstract class Value {
    public void set(Value v) {
       set(v.get());
    }
-   
+  
+   //TODO: default should be using ints, not Values
    public abstract Value add(Value v2);
    
    public abstract Value sub(Value v2);
@@ -28,7 +31,7 @@ public abstract class Value {
    
    @Override
    public String toString() {
-      return "Obj: " + super.toString() + "  With default value = " + get() + "     Signed: " + getSigned() + "     Unsigned: " + getUnsigned();
+      return Integer.toString(get(), Constants.getRadix());
    }
    
    public int get() {
@@ -40,10 +43,6 @@ public abstract class Value {
    public abstract int getSigned();
    
    public abstract int getUnsigned();
-   
-   public String getString() {
-      return String.valueOf(get());
-   }
    
    public boolean equals(int n) {
       return getUnsigned() == n || getSigned() == n;

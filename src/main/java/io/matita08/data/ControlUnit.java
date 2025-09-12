@@ -1,5 +1,6 @@
-package io.matita08.GUI;
+package io.matita08.data;
 
+import io.matita08.logic.Phase;
 import io.matita08.logic.*;
 
 public class ControlUnit {

@@ -1,7 +1,4 @@
-//TODO move to io.matita08.logic
-package io.matita08.GUI;
-
-import io.matita08.logic.Execution;
+package io.matita08.logic;
 
 public enum Phase{
    Fetch(Execution::fetch),

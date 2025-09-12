@@ -2,6 +2,7 @@ package io.matita08.logic;
 
 import io.matita08.GUI.*;
 import io.matita08.Utils;
+import io.matita08.data.*;
 import io.matita08.value.Value;
 
 import javax.swing.SwingUtilities;

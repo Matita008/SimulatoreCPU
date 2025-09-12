@@ -1,33 +1,29 @@
+//TODO redo
 package io.matita08.value;
 
 import io.matita08.Constants;
 
-public class UndefinedValue extends Value implements Cloneable{
-   UndefinedValue() {
+public class UndefinedSingleValue extends Value implements Cloneable{
+   UndefinedSingleValue() {
    }
    
    private int rand() {
-      return (int)(Math.random() * Constants.getValue_max() * 2);
-   }
-   
-   @Override
-   public String getString() {
-      return "?";
+      return (int)(Math.random() * Constants.getValueMax() * 2);
    }
    
    @Override
    public int getSigned() {
-      return rand() - Constants.getValue_max();
+      return rand() - Constants.getValueMax();
    }
    
    @Override
    public int getUnsigned() {
-      return rand() % Constants.getValue_max();
+      return rand() % Constants.getValueMax();
    }
    
    @SuppressWarnings("MethodDoesntCallSuperMethod")
    @Override
-   public UndefinedValue clone() {
+   public UndefinedSingleValue clone() {
       return this;
    }
    
