@@ -32,7 +32,7 @@ public abstract class Value {
    }
    
    public int get() {
-      return getSigned();
+      return getUnsigned();
    }
    
    public static String unset(){return "?";}
@@ -40,6 +40,10 @@ public abstract class Value {
    public abstract int getSigned();
    
    public abstract int getUnsigned();
+   
+   public String getString() {
+      return String.valueOf(get());
+   }
    
    public boolean equals(int n) {
       return getUnsigned() == n || getSigned() == n;

@@ -69,19 +69,25 @@ public class Display extends JFrame {
     * @return a new border
     */
    private Border titleBorder(String title) {
-      TitledBorder tb = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), title);
+      TitledBorder tb = BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black, 2), title);
       tb.setTitleJustification(TitledBorder.LEFT);
       tb.setTitlePosition(TitledBorder.TOP);
-      return BorderFactory.createCompoundBorder(new EmptyBorder(5, 5, 5, 5), tb);
+      return BorderFactory.createCompoundBorder(tb, new EmptyBorder(5, 5, 5, 5));
    }
    
    private Border displayBorder() {
       Border b = BorderFactory.createLineBorder(new Color(0.15f, 0.15f,0.15f));
       return BorderFactory.createCompoundBorder(b, new EmptyBorder(3, 1, 2, 5));
    }
+   
    private JLabel createDisplayBox(){
       return createDisplayBox(displayBorder());
    }
+   
+   /*
+   private JLabel createTitledDisplayBox(String title) {
+     return createDisplayBox(titleBorder(title));
+     }//*/
    
    private JLabel createDisplayBox(Border b) {
       JLabel l = new JLabel();
@@ -93,10 +99,11 @@ public class Display extends JFrame {
    
    private void createMainComponents() {
       GridBagConstraints gridPosition = new GridBagConstraints();
+      gridPosition.weightx = 0.5;
       Border border;
       
       border = titleBorder("CPU");
-      CPU = new JPanel();
+      CPU = new JPanel(new GridBagLayout());
       CPU.setBorder(border);
       gridPosition.gridx = 0;      //start column
       gridPosition.gridy = 0;      //start row
@@ -106,7 +113,7 @@ public class Display extends JFrame {
       gridPosition.ipady = 3;      //padding (y-axis)
       gridPosition.weighty = 0.6;  //distribution of extra space (y-axis)
       gridPosition.fill = GridBagConstraints.BOTH;
-      createCPUComponents();
+      createCPUComponents(CPU);
       main.add(CPU, gridPosition);
       
       busLabels = new JPanel();
@@ -164,14 +171,87 @@ public class Display extends JFrame {
       main.add(interfaces, gridPosition);
    }
    
-   private void createCPUComponents() {
-      CPU.add(new JLabel("CPU"));
-      CPU.add(new JLabel("CPUAddr"));
-      CPU.add(new JLabel("ALU"));
-      createCUComponents();
+   /*
+   JLabel Acc;
+   JLabel RegB;
+   JLabel PSW;
+    */
+   private void createCPUComponents(Container CPU) {
+      GridBagConstraints gridPosition = new GridBagConstraints();
+      gridPosition.fill = GridBagConstraints.BOTH;
+      gridPosition.ipadx = 2;
+      gridPosition.ipady = 2;
+      gridPosition.weightx = 0.1;
+      gridPosition.weighty = 0.1;
+      gridPosition.insets = new Insets(2,2,2,2);
+      
+      /*
+      *2(+1 x Labels)
+         |  0  |  1  |  2  |  3  |  4  |  5  | 6...10 |
+       0 | PC  |     |     |     |     | MAR |        |
+       1 |     | Pnt |     |     |     |     |        |
+       2 | IR  |     |     |     |     | MDR |        |
+       3 |     |     |     |     |     |     |        |
+       4 |     |     |     |     |     |     |--------|
+       5 |     |     |     |     |     |     |        |
+       6 |     |     |     |     |     |     |        |
+       7 |     |     |     |     |     |     |   CU   |
+       8 |     |     |     |     |     |     |        |
+       9 |     |     |     |     |     |     |        |
+      10 |     |     |     |     |     |     |--------|
+       */
+      
+      gridPosition.gridx = 0;      //start column
+      gridPosition.gridy = 0;      //start row
+      gridPosition.gridheight = 1; //row span
+      gridPosition.gridwidth = 1;  //column span
+      CPU.add(new JLabel("PC"), gridPosition);
+      gridPosition.gridy = 1;
+      CPU.add((PC = createDisplayBox()), gridPosition);
+      
+      gridPosition.gridx = 5;      //start column
+      gridPosition.gridy = 0;      //start row
+      gridPosition.gridheight = 1; //row span
+      gridPosition.gridwidth = 1;  //column span
+      CPU.add(new JLabel("MAR"), gridPosition);
+      gridPosition.gridy = 1;
+      CPU.add((MAR = createDisplayBox()), gridPosition);
+      
+      gridPosition.gridx = 1;      //start column
+      gridPosition.gridy = 2;      //start row
+      gridPosition.gridheight = 1; //row span
+      gridPosition.gridwidth = 1;  //column span
+      CPU.add(new JLabel("Pointer"), gridPosition);
+      gridPosition.gridy = 3;
+      CPU.add((Pointer = createDisplayBox()), gridPosition);
+      Pointer.setMinimumSize(new Dimension(16, 8));
+      
+      gridPosition.gridx = 0;      //start column
+      gridPosition.gridy = 4;      //start row
+      gridPosition.gridheight = 1; //row span
+      gridPosition.gridwidth = 1;  //column span
+      CPU.add(new JLabel("IR"), gridPosition);
+      gridPosition.gridy = 5;
+      CPU.add((IR = createDisplayBox()), gridPosition);
+      
+      gridPosition.gridx = 5;      //start column
+      gridPosition.gridy = 4;      //start row
+      gridPosition.gridheight = 1; //row span
+      gridPosition.gridwidth = 1;  //column span
+      CPU.add(new JLabel("MDR"), gridPosition);
+      gridPosition.gridy = 5;
+      CPU.add((MDR = createDisplayBox()), gridPosition);
+      
+      updatePR();
+      
+      gridPosition.gridx = 6;      //start column
+      gridPosition.gridy = 8;      //start row
+      gridPosition.gridheight = 4; //row span
+      gridPosition.gridwidth = 6;  //column span
+      CPU.add(createCUComponents(), gridPosition);
    }
    
-   private void createCUComponents() {
+   private Component createCUComponents() {
       JPanel CU = new JPanel(new GridLayout(6,2,4,2));
       CU.setBorder(titleBorder("Control Unit"));
       
@@ -199,8 +279,8 @@ public class Display extends JFrame {
       remaining = createDisplayBox();
       CU.add(remaining);
       
-      CPU.add(CU);
       updateCU();
+      return CU;
    }
    
    private void createBusComponents() {
@@ -233,6 +313,8 @@ public class Display extends JFrame {
       controlPanel.add(update);
    }
    
+   
+   
    private void createInterfacesComponents() {
       interfaces.add(new JLabel("bus thingy stuff"));
    }
@@ -259,6 +341,9 @@ public class Display extends JFrame {
       if((Registers.modFlag & 4) == 4) instance.updateALU();
    }
    
+   /**
+    * Function to update the visual part of the Control Unit
+    */
    private void updateCU() {
       if(ControlUnit.opcode == Operation.Unknown) instruction.setText("");
       else instruction.setText(ControlUnit.opcode.name.toUpperCase(Locale.ROOT));
@@ -275,14 +360,17 @@ public class Display extends JFrame {
       else remaining.setText(String.valueOf(ControlUnit.currentCycle));
    }
    
+   /**
+    * Function to update the visual part of the Central Memory
+    */
    private void updateMC() {
       for (int i = 0; i < Constants.getMC_Size(); i++) {
          Value v = Registers.getMC(i);
          String s;
-         if(v instanceof UndefinedValue) s = UndefinedValue.unset();
+         if(v instanceof UndefinedValue) s = DoubleValue.unset();
          else {   //I don't like the else case being larger than the if one, but inverting them looks so bad, so I'll stick with this abomination
             int n = v.get();
-            if(n < 10) s = " ";  //Bad padding logic, idk.
+            if(n < 10) s = " ";  //Bad padding logic, ik.
             //else if(n < 100) s = " ";//if uncommented the string in the line above shall have 2 spaces, else only one
             else s = "";
             s += String.valueOf(n);
@@ -291,10 +379,21 @@ public class Display extends JFrame {
       }
    }
    
+   /**
+    * Function to update a visual part of the CPU
+    */
    private void updatePR() {//ir, pc, mdr, mar, pointer
+      PC.setText(Registers.pc().getString());
+      MAR.setText(Registers.getMAR().getString());
+      Pointer.setText(Registers.getPointer().getString());
+      MDR.setText(Registers.getMDR().getString());
+      IR.setText(Registers.getIr().getString());
    
    }
    
+   /**
+    * Function to update the visual part of the CPU that include all ALU-related components
+    */
    private void updateALU() {//Acc, regB, flags, result, alu op
    
    }

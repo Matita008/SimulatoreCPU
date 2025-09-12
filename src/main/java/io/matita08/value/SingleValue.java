@@ -45,7 +45,7 @@ public class SingleValue extends Value {
       return new SingleValue(getSigned() * v2.getSigned());
    }
    
-   public static String unset(){return "??";}
+   public static String unset(){return "?";}
    //---------------------------------------------------------------------------------------
    
    private int toUnsigned(){

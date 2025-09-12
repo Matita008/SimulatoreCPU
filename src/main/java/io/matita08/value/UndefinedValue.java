@@ -11,6 +11,11 @@ public class UndefinedValue extends Value implements Cloneable{
    }
    
    @Override
+   public String getString() {
+      return "?";
+   }
+   
+   @Override
    public int getSigned() {
       return rand() - Constants.getValue_max();
    }
