@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "io.matita08"
-version = "1.5"
+version = "1.7"
 
 repositories {
     mavenCentral()
@@ -30,7 +30,7 @@ application {
 val normJar = // Same mainclass as the application plugin setting
     tasks.register("normJar", type = Jar::class, configurationAction = fun Jar.() {
         manifest {
-            attributes["Implementation-Title"] = "Simulatore"
+            attributes["Implementation-Title"] = "CPUSim"
             attributes["Implementation-Version"] = version
             attributes["Main-Class"] = "io.matita08.Main" // Same mainclass as the application plugin setting
         }

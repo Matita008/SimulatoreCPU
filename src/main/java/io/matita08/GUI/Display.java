@@ -1,6 +1,6 @@
 package io.matita08.GUI;
 
-import io.matita08.*;
+import io.matita08.Constants;
 import io.matita08.GUI.listeners.Load;
 import io.matita08.data.*;
 import io.matita08.logic.*;
@@ -84,6 +84,21 @@ public class Display extends JFrame {
       return createDisplayBox(displayBorder());
    }
    
+   private GridBagConstraints set(GridBagConstraints gbc, int x, int y, int width, int height){
+      gbc.gridx = x;
+      gbc.gridy = y;
+      gbc.gridwidth = width;
+      gbc.gridheight = height;
+      return gbc;
+   }
+   
+   private void addLine(GridBagConstraints gbc, Container container){
+      container.add(new Line(), gbc);
+   }
+   
+   private void addSpace(GridBagConstraints gbc, Container container){
+      container.add(new JSeparator(), gbc);
+   }
    /*
    private JLabel createTitledDisplayBox(String title) {
      return createDisplayBox(titleBorder(title));
@@ -171,11 +186,6 @@ public class Display extends JFrame {
       main.add(interfaces, gridPosition);
    }
    
-   /*
-   JLabel Acc;
-   JLabel RegB;
-   JLabel PSW;
-    */
    private void createCPUComponents(Container CPU) {
       GridBagConstraints gridPosition = new GridBagConstraints();
       gridPosition.fill = GridBagConstraints.BOTH;
@@ -201,54 +211,65 @@ public class Display extends JFrame {
       10 |     |     |     |     |     |     |--------|
        */
       
-      gridPosition.gridx = 0;      //start column
-      gridPosition.gridy = 0;      //start row
-      gridPosition.gridheight = 1; //row span
-      gridPosition.gridwidth = 1;  //column span
+      set(gridPosition,0,0,1,1);
       CPU.add(new JLabel("PC"), gridPosition);
       gridPosition.gridy = 1;
       CPU.add((PC = createDisplayBox()), gridPosition);
       
-      gridPosition.gridx = 5;      //start column
-      gridPosition.gridy = 0;      //start row
-      gridPosition.gridheight = 1; //row span
-      gridPosition.gridwidth = 1;  //column span
+      set(gridPosition, 7,0,1,1);
       CPU.add(new JLabel("MAR"), gridPosition);
       gridPosition.gridy = 1;
       CPU.add((MAR = createDisplayBox()), gridPosition);
       
-      gridPosition.gridx = 1;      //start column
-      gridPosition.gridy = 2;      //start row
-      gridPosition.gridheight = 1; //row span
-      gridPosition.gridwidth = 1;  //column span
+      addLine(set(gridPosition,1,1,6,1), CPU);
+      
+      //This is here to make the 6th column be filled with the line, not the MAR/MDR textboxes
+      CPU.add(new JLabel(), set(gridPosition, 6,2,1,1));
+      
+      set(gridPosition,2,2,1,1);
       CPU.add(new JLabel("Pointer"), gridPosition);
       gridPosition.gridy = 3;
       CPU.add((Pointer = createDisplayBox()), gridPosition);
       Pointer.setMinimumSize(new Dimension(16, 8));
       
-      gridPosition.gridx = 0;      //start column
-      gridPosition.gridy = 4;      //start row
-      gridPosition.gridheight = 1; //row span
-      gridPosition.gridwidth = 1;  //column span
+      set(gridPosition,0,4,1,1);
       CPU.add(new JLabel("IR"), gridPosition);
       gridPosition.gridy = 5;
       CPU.add((IR = createDisplayBox()), gridPosition);
       
-      gridPosition.gridx = 5;      //start column
-      gridPosition.gridy = 4;      //start row
-      gridPosition.gridheight = 1; //row span
-      gridPosition.gridwidth = 1;  //column span
+      set(gridPosition,7,4,1,1);
       CPU.add(new JLabel("MDR"), gridPosition);
       gridPosition.gridy = 5;
       CPU.add((MDR = createDisplayBox()), gridPosition);
       
+      addLine(set(gridPosition,1,5,6,1), CPU);
+      
+      addLine(set(gridPosition, 8, 1, 2,1), CPU);
+      addLine(set(gridPosition, 8, 5,1,1), CPU);
+      
       updatePR();
       
-      gridPosition.gridx = 6;      //start column
-      gridPosition.gridy = 8;      //start row
-      gridPosition.gridheight = 4; //row span
-      gridPosition.gridwidth = 6;  //column span
-      CPU.add(createCUComponents(), gridPosition);
+      CPU.add(new JLabel("Acc"), set(gridPosition,0,8,1,1));
+      gridPosition.gridy = 9;
+      CPU.add((Acc = createDisplayBox()), gridPosition);
+      
+      //Don't make Acc and RegB too tall hack
+      CPU.add(new JLabel(), set(gridPosition, 0,6,1,1));
+      CPU.add(new JLabel(), set(gridPosition, 0,7,1,1));
+      CPU.add(new JLabel(), set(gridPosition, 0,10,1,1));
+      CPU.add(new JLabel(), set(gridPosition, 0,13,1,1));
+      CPU.add(new JLabel(), set(gridPosition, 0,14,1,1));
+      
+      CPU.add(new JLabel("Reg B"), set(gridPosition,0,11,1,1));
+      gridPosition.gridy = 12;
+      CPU.add((RegB = createDisplayBox()), gridPosition);
+   /*
+   JLabel Acc;
+   JLabel RegB;
+   JLabel PSW;
+    */
+      
+      CPU.add(createCUComponents(), set(gridPosition,6,8,4,6));
    }
    
    private Component createCUComponents() {
@@ -395,7 +416,9 @@ public class Display extends JFrame {
     * Function to update the visual part of the CPU that include all ALU-related components
     */
    private void updateALU() {//Acc, regB, flags, result, alu op
-   
+      Acc.setText(Registers.getAcc().toString());
+      RegB.setText(Registers.getRegB().toString());
+      Acc.setText(Registers.getAcc().toString());
    }
    
    /**
@@ -403,7 +426,12 @@ public class Display extends JFrame {
     */
    public static void main(String[] args) throws InterruptedException, InvocationTargetException {
       System.out.println("Hello world!");
+      for(String s : args) System.out.println("arg = " + s);
       SwingUtilities.invokeAndWait(Display::init);
+      int i = 0;
+      for (Component c : instance.CPU.getComponents()) {
+         System.out.println("c" + (i++) + " = " + c);
+      }
    }
    
    /**
@@ -414,8 +442,3 @@ public class Display extends JFrame {
       instance = new Display();
    }
 }
-
-/* java.awt.event.ActionEvent[ACTION_PERFORMED,cmd=ApproveSelection,when=1748275134527,modifiers=Button1] on javax.swing.JFileChooser[,0,0,500x326,invalid,
-   layout=java.awt.BorderLayout,alignmentX=0.0,alignmentY=0.0,border=javax.swing.border.EmptyBorder@731fa788,flags=320,maximumSize=,minimumSize=,preferredSize=,
-   approveButtonText=,currentDirectory=C:\Users\matti\Documents\!other,dialogTitle=,dialogType=OPEN_DIALOG,fileSelectionMode=FILES_ONLY,returnValue=APPROVE_OPTION,
-   selectedFile=C:\Users\matti\Documents\!other\Digital-Logic-Sim-Windows.zip,useFileHiding=false] */
