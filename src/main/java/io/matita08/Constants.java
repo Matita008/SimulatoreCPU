@@ -52,7 +52,6 @@ public final class Constants {
                helpMenu();
                return true;
             }
-            //remove leading - or --
             //every case is formed of either a single letter or the name of the parameter to change
             switch(parser.strip('-').toLowerCase(Locale.ROOT)) {
                case "r":
@@ -62,7 +61,7 @@ public final class Constants {
                   } catch (NumberFormatException e) {
                      throw new ParserException("The passed value \"" + parser.cur() + "\" is not a number", e);
                   }
-                  break;
+               break;
                case "mc":
                   try {
                      MCSize = Integer.parseInt(parser.next());
@@ -77,6 +76,7 @@ public final class Constants {
                   } catch (NumberFormatException e) {
                      throw new ParserException("The passed value \"" + parser.cur() + "\" is not a number", e);
                   }
+               break;
                case "a":
                case "address":
                   try {
@@ -87,6 +87,7 @@ public final class Constants {
                   } catch (NumberFormatException e) {
                      throw new ParserException("The passed value \"" + parser.cur() + "\" is not a number", e);
                   }
+               break;
                case "o":
                case "operations":
                   operationEnumName = parser.next();
@@ -98,7 +99,7 @@ public final class Constants {
                   } catch (NumberFormatException e) {
                      throw new ParserException("The passed value \"" + parser.cur() + "\" is not a number", e);
                   }
-                  break;
+               break;
                default:
                   System.err.println("The passed option \"" + parser.cur() + "\" is invalid");
                   System.out.println("Incorrect parameter used");
@@ -109,13 +110,15 @@ public final class Constants {
          }
       } catch (ArrayIndexOutOfBoundsException e) {
          System.err.println("Got array out of bounds exception while parsing passed arguments");
-         e.printStackTrace(System.err);
+         System.err.println(e.getMessage());
+         //e.printStackTrace(System.err);
          System.out.println("Incorrect usage");
          helpMenu();
          return true;
       } catch (ParserException e) {
          System.err.println("Illegal argument passed as an option to " + parser.prev() + "in position " + parser.pos + ": " + parser.cur());
-         e.printStackTrace(System.err);
+         System.err.println(e.getMessage());
+         //e.printStackTrace(System.err);
          System.out.println("Incorrect usage");
          helpMenu();
          return true;
@@ -129,11 +132,12 @@ public final class Constants {
     */
    private static void helpMenu() {
       System.out.println("Available options:");
-      System.out.println(" -r -radix: Change the radix used to display, will default to 10 if not set or greater than " + Character.MAX_RADIX);
-      System.out.println(" -a -address: either 1 or 2 (default), the size of an address relative to a register size");
-      System.out.println(" -o -operations: the fully qualified name of the class used as instruction set. Defaults to \"io.matita08.logic.Operations3Bit\"");
-      System.out.println(" -s -size: The size of a register. defaults to 8. please keep it low, or you may experience issue");
+      System.out.println(" -r --radix: Change the radix used to display, will default to 10 if not set or greater than " + Character.MAX_RADIX);
+      System.out.println(" -a --address: either 1 or 2 (default), the size of an address relative to a register size");
+      System.out.println(" -o --operations: the fully qualified name of the class used as instruction set. Defaults to \"io.matita08.logic.Operations3Bit\"");
+      System.out.println(" -s --size: The size of a register. defaults to 8. please keep it low, or you may experience issue");
       System.out.println(" -mc: the size of the Central Memory can be 1 - (size * address)");
+      System.out.println(" -h --help: Shows this guide");
    }
    
    /**
@@ -191,7 +195,7 @@ public final class Constants {
       }
       
       /**
-       * Check if there's one or more element in the array
+       * Check if there's one or more element in the array.
        * Also indicates if the next call to {@link #next()} will throw {@link java.lang.ArrayIndexOutOfBoundsException}
        *
        * @return If there is at least another element in {@link #opts}

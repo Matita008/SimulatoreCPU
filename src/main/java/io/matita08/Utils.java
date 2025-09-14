@@ -1,5 +1,6 @@
 package io.matita08;
 
+import io.matita08.GUI.Display;
 import io.matita08.data.Registers;
 import io.matita08.value.Value;
 
@@ -58,5 +59,6 @@ public class Utils {
          //noinspection CallToPrintStackTrace
          fnf.printStackTrace();
       }
+      Display.update();
    }
 }

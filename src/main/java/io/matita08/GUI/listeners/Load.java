@@ -54,13 +54,13 @@ public class Load implements ActionListener {
    public void load(ActionEvent e) {
       if(f == null) return;
       Display.instance.enableInputMethods(true);
-      System.out.println(e);
+      //System.out.println(e);
       f.setVisible(false);
       f.dispose();
       f = null;
       if (e.getActionCommand().equals("CancelSelection")) return;
       if (!e.getActionCommand().equals("ApproveSelection")) return;
-      System.out.println("Opened file: " + fc.getSelectedFile().toString());
+      //System.out.println("Opened file: " + fc.getSelectedFile().toString());
       Utils.loadMC(fc.getSelectedFile());
    }
 }
