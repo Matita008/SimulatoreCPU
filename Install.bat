@@ -29,7 +29,7 @@ REM set /P "originHash= " <%TMPDIR%\hash.sha256
 set /P "originHash= " <%TMPDIR%\hash.sha256
 
 echo Calculating file hash
-FOR /F "usebackq" %%i IN (`powershell -c "(Get-FileHash -Algorithm SHA256 %JAVAZIP%).hash"`) DO set "fileHash=%%~I"
+FOR /F "usebackq" %%i IN (`powershell -c "(Get-FileHash -Algorithm SHA256 %JAVAZIP%).hash"`) DO set "fileHash=%%~i"
 
 echo Comparing hash...
 if %originHash% == %fileHash% goto hash
