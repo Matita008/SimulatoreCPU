@@ -19,12 +19,12 @@ set "CONFIGFILE=%DATADIR%\params.list"
 if not exist "%TMPDIR%" mkdir "%TMPDIR%"
 
 echo Pulling java release from oracle...
-REM curl --ssl-no-revoke -o %JAVAZIP% %JAVAURL%
+curl --ssl-no-revoke -o %JAVAZIP% %JAVAURL%
 
 echo Pulling file hash from oracle...
 FOR /F "usebackq" %%i IN (`curl --ssl-no-revoke -s %JAVAURL%.sha256`) DO set "originHash=%%~i"
-curl --ssl-no-revoke -o %TMPDIR%\hash.sha256 https://download.oracle.com/java/24/latest/jdk-24_windows-x64_bin.zip.sha256
-set /P "originHash= " <%TMPDIR%\hash.sha256
+REM curl --ssl-no-revoke -o %TMPDIR%\hash.sha256 https://download.oracle.com/java/24/latest/jdk-24_windows-x64_bin.zip.sha256
+REM set /P "originHash= " <%TMPDIR%\hash.sha256
 (powershell -c "\"%originHash%\".toUpper()") >%TMPDIR%\hash.sha256
 set /P "originHash= " <%TMPDIR%\hash.sha256
 
@@ -43,7 +43,8 @@ echo fileHash = %fileHash%
 echo.
 echo The script will terminate in 5 minutes unless a key is pressed
 timeout /T 300
-goto EOF
+color
+goto :EOF
 
 :hash
 echo Hash check completed
