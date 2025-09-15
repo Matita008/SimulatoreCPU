@@ -22,7 +22,10 @@ set "Desktop=%USERPROFILE%\Desktop"
 set "StartMenuLnk=%StartMenu%\%ProgramName%.lnk"
 set "DesktopLnk=%Desktop%\%ProgramName%.lnk"
 
+if not exist "%Desktop%" set "Desktop=%USERPROFILE%\OneDrive\Desktop"
+
 if not exist "%TMPDIR%" mkdir "%TMPDIR%"
+if not exist "%DATADIR%\assets" mkdir "%DATADIR%\assets"
 
 echo Pulling java release from oracle...
 curl --ssl-no-revoke -o %JAVAZIP% %JAVAURL%
@@ -82,8 +85,6 @@ set "ICO_URL1=!ICO_URL1:"browser_download_url": =!"
 set "ICO_URL1=!ICO_URL1: =!"
 set "ICO_URL1=!ICO_URL1:"=!"
 set "ICO_URL=!ICO_URL1!"
-
-if not exist "%DATADIR%\assets" mkdir "%DATADIR%\assets"
 
 curl --ssl-no-revoke -L -o %ICOFILE% %ICO_URL%
 echo Downloaded icon from %ICO_URL% to %ICOFILE%

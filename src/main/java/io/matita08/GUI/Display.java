@@ -113,6 +113,7 @@ public class Display extends JFrame {
       return l;
    }
    
+   //Create the GUI components
    private void createMainComponents() {
       GridBagConstraints gridPosition = new GridBagConstraints();
       gridPosition.weightx = 0.5;
@@ -132,10 +133,10 @@ public class Display extends JFrame {
       createCPUComponents(CPU);
       main.add(CPU, gridPosition);
       
-      busLabels = new JPanel();
+      busLabels = new JPanel(new GridLayout(8,1));
       gridPosition.gridx = 5;      //start column
-      gridPosition.gridy = 0;      //start row
-      gridPosition.gridheight = 3; //row span
+      gridPosition.gridy = 1;      //start row
+      gridPosition.gridheight = 1; //row span
       gridPosition.gridwidth = 1;  //column span
       gridPosition.ipadx = 2;      //padding (x-axis)
       gridPosition.ipady = 2;      //padding (y-axis)
@@ -183,10 +184,11 @@ public class Display extends JFrame {
       gridPosition.ipadx = 2;      //padding (x-axis)
       gridPosition.ipady = 3;      //padding (y-axis)
       gridPosition.weighty = 0.6;  //distribution of extra space (y-axis)
-      createInterfacesComponents();
+      interfaces.add()
       main.add(interfaces, gridPosition);
    }
    
+   //Create the CPU GUI
    private void createCPUComponents(Container CPU) {
       GridBagConstraints gridPosition = new GridBagConstraints();
       gridPosition.fill = GridBagConstraints.BOTH;
@@ -226,11 +228,15 @@ public class Display extends JFrame {
       //This is here to make the 6th column be filled with the line, not the MAR/MDR textboxes
       CPU.add(new JLabel(), set(gridPosition, 6,2,1,1));
       
+      CPU.add(new JLabel(), set(gridPosition, 3, 1, 1, 1));
+      
       set(gridPosition,2,2,1,1);
       CPU.add(new JLabel("Pointer"), gridPosition);
       gridPosition.gridy = 3;
       CPU.add((Pointer = createDisplayBox()), gridPosition);
-      Pointer.setMinimumSize(new Dimension(16, 8));
+      Pointer.setMinimumSize(new Dimension(15, 8));
+      
+      CPU.add(new JLabel(), set(gridPosition, 3, 3, 1, 1));
       
       set(gridPosition,0,4,1,1);
       CPU.add(new JLabel("IR"), gridPosition);
@@ -268,17 +274,29 @@ public class Display extends JFrame {
       gridPosition.gridy = 12;
       CPU.add((RegB = createDisplayBox()), gridPosition);
       
-      JPanel ALUB = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 20));
+      JPanel ALUB = new JPanel(new GridLayout(4,2));
+      //Put the component in the penultimate row and last column
+      for(int i = 0; i < 3*2 -1; i++) ALUB.add(new JLabel());
+      
       ALUB.setBorder(titleBorder("ALU"));
+      ALUB.setMinimumSize(new Dimension(175, 200));
       ALU = createDisplayBox(titleBorder("Op"));
       ALU.setText("    ");
       ALU.setMinimumSize(new Dimension(50,5));
       ALUB.add(ALU);
+      
       CPU.add(ALUB, set(gridPosition, 2,7,3,7));
-      CPU.add((PSW = createDisplayBox()));
+      
+      CPU.add(new JLabel(), set(gridPosition, 5,10,1,1));
+      
+      CPU.add(new JLabel("PSW"), set(gridPosition, 5,11,1,1));
+      gridPosition.gridy = 12;
+      CPU.add((PSW = createDisplayBox()), gridPosition);
+      
       CPU.add(createCUComponents(), set(gridPosition,6,8,4,6));
    }
    
+   //
    private Component createCUComponents() {
       JPanel CU = new JPanel(new GridLayout(6,2,4,2));
       CU.setBorder(titleBorder("Control Unit"));
@@ -311,10 +329,19 @@ public class Display extends JFrame {
       return CU;
    }
    
+   //Literally 2 labels
    private void createBusComponents() {
-      busLabels.add(new JLabel("bus"));
+      busLabels.add(new JLabel());
+      busLabels.add(new JLabel());
+      busLabels.add(new JLabel());
+      busLabels.add(new JLabel());
+      busLabels.add(new JLabel("Address bus ->"));
+      busLabels.add(new JLabel());
+      busLabels.add(new JLabel("<- Data bus ->"));
+      busLabels.add(new JLabel());
    }
    
+   //Create the Centra Memory GUI
    private void createMCComponents() {
       MC.add(new JLabel("Addresses  ", SwingConstants.RIGHT));
       MC.add(new JLabel(" Values", SwingConstants.LEFT));
@@ -327,6 +354,7 @@ public class Display extends JFrame {
       }
    }
    
+   //Create the buttons in the bottom left GUI
    private void createControlPanelComponents() {
       JButton step = new JButton("Step");
       step.addActionListener(Execution::step);
@@ -339,12 +367,7 @@ public class Display extends JFrame {
       JButton update = new JButton("Update");
       update.addActionListener((e) -> Display.update());
       controlPanel.add(update);
-   }
-   
-   
-   
-   private void createInterfacesComponents() {
-      interfaces.add(new JLabel("bus thingy stuff"));
+      update.setVisible(false);
    }
    
    /**

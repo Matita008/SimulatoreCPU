@@ -1,10 +1,21 @@
 package io.matita08;
 
-import java.io.File;
+import java.io.*;
+import java.util.Locale;
 
 public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
+   private static final File logFile = createLogFile();
+   public static final PrintStream logStream;
+   
+   static {
+      try {
+         logStream = new PrintStream(logFile);
+      } catch (FileNotFoundException e) {
+         throw new RuntimeException(e);
+      }
+   }
+   
    private final boolean isSwingEDT;
-   private static final File logFolder = new File(appFolder());
    
    public ExceptionHandler(boolean swingThread) {
       isSwingEDT = swingThread;
@@ -23,14 +34,32 @@ public class ExceptionHandler implements Thread.UncaughtExceptionHandler {
    public void uncaughtException(Thread t, Throwable e) {
       if(isSwingEDT) {
          System.out.println("An exception occurred in the swing event dispatching thread, exiting");
-         e.printStackTrace(System.err);
+         logStream.println("An exception occurred in the swing event dispatching thread");
       } else {
          System.out.println("An exception occurred in the thread " + t.getName() + " " + t);
-         e.printStackTrace(System.err);
+         logStream.println("An exception occurred in the thread " + t.getName() + " " + t);
       }
+      e.printStackTrace(System.err);
+      e.printStackTrace(logStream);
+      if(isSwingEDT) System.exit(3);
    }
    
-   private static String appFolder(){
-      return System.getenv("AppData") + "\\matita008\\CPUSim";
+   private static File createLogFile() {
+      File logFolder = new File(appFolder() + "\\matita008\\CPUSim\\Logs");
+      if(!logFolder.exists()) logFolder.mkdirs();
+      File out = new File(logFolder, "log" + System.currentTimeMillis() + ".txt");
+      try {
+         out.createNewFile();
+      } catch (IOException e) {
+         throw new RuntimeException(e);
+      }
+      return out;
+   }
+   
+   private static String appFolder() {
+      String OS = (System.getProperty("os.name")).toLowerCase(Locale.ROOT);
+      if(OS.contains("win")) return System.getenv("AppData");
+      if(OS.contains("mac")) return System.getProperty("user.home") + "/Library/Application Support";
+      return System.getProperty("user.home");
    }
 }
