@@ -22,7 +22,7 @@ echo Pulling java release from oracle...
 REM curl --ssl-no-revoke -o %JAVAZIP% %JAVAURL%
 
 echo Pulling file hash from oracle...
-FOR /F "usebackq" %%i IN (`curl --ssl-no-revoke -s %JAVAURL%.sha256`) DO set "originHash=%~I"
+FOR /F "usebackq" %%i IN (`curl --ssl-no-revoke -s %JAVAURL%.sha256`) DO set "originHash=%%~i"
 curl --ssl-no-revoke -o %TMPDIR%\hash.sha256 https://download.oracle.com/java/24/latest/jdk-24_windows-x64_bin.zip.sha256
 set /P "originHash= " <%TMPDIR%\hash.sha256
 (powershell -c "\"%originHash%\".toUpper()") >%TMPDIR%\hash.sha256
