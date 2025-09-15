@@ -102,15 +102,14 @@ echo set "Target=%JAVAEXE% -jar %JARFILE% %%params%%"                           
 echo if /I "%%MODE%%"=="true" (                                                              >>"%Launcher%"
 echo start cmd /k ""%JAVAEXE% -jar ""%JARFILE%"" ""%%params%%"" ^>"%DATADIR%\latest.log"""   >>"%Launcher%"
 echo ) else (                                                                                >>"%Launcher%"
-echo   powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command "Start-Process cmd.exe -ArgumentList '/c', ('""%%Target%%""') -WindowStyle Hidden -RedirectStandardOutput ""%DATADIR%\latest.log"" -RedirectStandardError ""%DATADIR%\error.log"""  >>"%Launcher%"
+echo   powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command "Start-Process cmd.exe -ArgumentList '/c', ('"%%Target%%"') -WindowStyle Hidden -RedirectStandardOutput "%DATADIR%\latest.log" -RedirectStandardError "%DATADIR%\error.log" " >>"%Launcher%"
 echo )                                                                                       >>"%Launcher%"
 
 echo Creating shortcut to desktop and start menu
 
 for %%d in ("%StartMenuLnk%" "%DesktopLnk%") do (
   powershell -NoProfile -ExecutionPolicy Bypass -Command ^
-    "$ws=New-Object -ComObject WScript.Shell; $s=$ws.CreateShortcut('%%~d'); $s.TargetPath='cmd.exe'; $s.Arguments='/C ""%Launcher%""'; if (Test-Path '%ICOFILE%') { $s.IconLocation='%ICOFILE%' }; $s.Save()"
-REM ; $s.WorkingDirectory='%DATADIR%'
+    "$ws=New-Object -ComObject WScript.Shell; $s=$ws.CreateShortcut('%%~d'); $s.TargetPath='cmd.exe'; $s.WorkingDirectory='%USERPROFILE%'; $s.Arguments='/C ""%Launcher%""'; if (Test-Path '%ICOFILE%') { $s.IconLocation='%ICOFILE%' }; $s.Save()"
 )
 
 del /f /s /q %TMPDIR% >nul
