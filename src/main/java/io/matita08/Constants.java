@@ -48,6 +48,7 @@ public final class Constants {
       try {
          while(parser.hasNext()) {
             String cur = parser.cur();
+            if(cur == null || cur.isBlank()) return false;
             if(cur.charAt(0) != '-' || "-help".equals(cur) || "-h".equals(cur) || "--help".equals(cur) || "--h".equals(cur)) {
                helpMenu();
                return true;
