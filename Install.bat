@@ -1,20 +1,26 @@
 @echo off
+setlocal enabledelayedexpansion
 
 set "API=http://api.github.com/repos/matita008/SimulatoreCPU/releases/latest"
 set "JAVAURL=https://download.oracle.com/java/24/latest/jdk-24_windows-x64_bin.zip"
 set "DATADIR=%APPDATA%\matita008\CPUSim"
 set "TMPDIR=%DATADIR%\tmp"
 set "JAVAZIP=%TMPDIR%\java.zip"
-set "RELEASEINFO=%DATADIR%\releaseInfo.json"
+set "RELEASEINFO=%TMPDIR%\releaseInfo.json"
 set "JARFILE=%DATADIR%\CPUSim.jar"
-set "EXE=start.exe"
 set "ICON=icon.ico"
 set "ICOFILE=%DATADIR%\assets\%icon%"
 set "DESC=Launch CPU Emulator"
 set "VBSTMPSCRIPT=%temp%\mkshortcut.vbs"
-set "RUNFILE=%DATADIR%\run.bat"
+set "Launcher=%DATADIR%\run.bat"
 set "VISIBILITYFILE=%DATADIR%\showconsole"
 set "CONFIGFILE=%DATADIR%\params.list"
+set "RunHiddenVBS=%DATADIR%\runhidden.vbs"
+set "ProgramName=CPUSim"
+set "StartMenu=%AppData%\Microsoft\Windows\Start Menu\Programs"
+set "Desktop=%USERPROFILE%\Desktop"
+set "StartMenuLnk=%StartMenu%\%ProgramName%.lnk"
+set "DesktopLnk=%Desktop%\%ProgramName%.lnk"
 
 if not exist "%TMPDIR%" mkdir "%TMPDIR%"
 
@@ -50,15 +56,18 @@ goto :EOF
 echo Hash check completed
 
 echo Exctracting JVM/JRE
-tar -xf j%JAVAZIP% -C %DATADIR%\java
-for /f "usebackq tokens=* delims=" %%A in (`where /R %DATADIR%\java java.exe `) DO set "JAVAEXE=%%A"
+if not exist "%DATADIR%\java" mkdir "%DATADIR%\java"
+cd %DATADIR%
+tar -xf %JAVAZIP% -C java
+
+for /f "usebackq tokens=* delims=" %%A in (`where /R "%DATADIR%\java" java.exe `) DO set "JAVAEXE=%%A"
 
 echo Pulling latest release info
 curl --ssl-no-revoke -L -s %API% >%RELEASEINFO%
 
 echo Searching for download link
 set "JAR_URL="
-for /f "usebackq tokens=* delims=" %%A in (`findstr /i "browser_download_url" %RELEASEINFO% ^| findstr /i ".jar"`) DO set "JAR_URL1=%%A"
+for /f "usebackq tokens=* delims=" %%A in (`findstr /i "browser_download_url" "%RELEASEINFO%" ^| findstr /i ".jar"`) DO set "JAR_URL1=%%A"
 set "JAR_URL1=!JAR_URL1:"browser_download_url": =!"
 set "JAR_URL1=!JAR_URL1: =!"
 set "JAR_URL1=!JAR_URL1:"=!"
@@ -67,58 +76,45 @@ set "JAR_URL=!JAR_URL1!"
 echo Downloading latest release from %JAR_URL% into %JARFILE% ...
 curl --ssl-no-revoke -L -o %JARFILE% %JAR_URL%
 
-echo Creating execution script...
-
-(
- echo @echo off
- echo java -jar %JARFILE% %%*
- echo Program exited with code %%ERRORLEVEL%%
- echo echo This window will close in 2 minutes unless a key is pressed
- echo timeout /T 120
-) >run.bat
-
 echo Downloading icon...
-for /f "usebackq tokens=* delims=" %%A in (`findstr /i "browser_download_url" %RELEASEINFO% ^| findstr /i ".ico"`) DO set "ICO_URL1=%%A"
+for /f "usebackq tokens=* delims=" %%A in (`findstr /i "browser_download_url" "%RELEASEINFO%" ^| findstr /i ".ico"`) DO set "ICO_URL1=%%A"
 set "ICO_URL1=!ICO_URL1:"browser_download_url": =!"
 set "ICO_URL1=!ICO_URL1: =!"
 set "ICO_URL1=!ICO_URL1:"=!"
 set "ICO_URL=!ICO_URL1!"
 
+if not exist "%DATADIR%\assets" mkdir "%DATADIR%\assets"
+
 curl --ssl-no-revoke -L -o %ICOFILE% %ICO_URL%
+echo Downloaded icon from %ICO_URL% to %ICOFILE%
 
 echo Creating config files
-if not exist "%VISIBILITYFILE%" echo false > "%VISIBILITYFILE%"
-if not exist "%CONFIGFILE%" echo. >%CONFIGFILE%
+if not exist "%VISIBILITYFILE%" echo false>"%VISIBILITYFILE%"
+if not exist "%CONFIGFILE%" echo. >"%CONFIGFILE%"
 
-set "RunHiddenVBS=%DATADIR%\runhidden.vbs"
-(
-echo Set WshShell = CreateObject("WScript.Shell")
-echo WshShell.Run """" ^& WScript.Arguments(0) ^& """", 0, False
-) > "%RunHiddenVBS%"
+echo Creating execution script...
 
-(
-echo @echo off
-echo setlocal
-echo for /f "usebackq delims=" %%%%A in ("%VISIBILITYFILE%") do set "MODE=%%%%A"
-echo for /f "usebackq delims=" %%%%A in ("%CONFIGFILE%") do set "params=%%%%A"
-echo if /I "%%MODE%%"=="false" (
-echo     cscript //nologo "%RunHiddenVBS%" "%JAVAEXE% %JARFILE% %%params%%"
-echo ) else (
-echo     call "%JAVAEXE% %JARFILE% %%params%%"
-echo )
-) > "%RUNFILE%"
+echo @echo off                                                                               >"%Launcher%" 
+echo setlocal                                                                                >>"%Launcher%"
+echo for /f "usebackq delims=" %%%%A in ("%VISIBILITYFILE%") do set "MODE=%%%%A"             >>"%Launcher%"
+echo for /f "usebackq delims=" %%%%A in ("%CONFIGFILE%") do set "params=%%%%A"               >>"%Launcher%"
+echo set "Target=%JAVAEXE% -jar %JARFILE% %%params%%"                                        >>"%Launcher%"
+echo if /I "%%MODE%%"=="true" (                                                              >>"%Launcher%"
+echo   start %JAVAEXE% -jar "%JARFILE%" ""%%params%%"" ^>"%DATADIR%\latest.log"              >>"%Launcher%"
+echo ) else (                                                                                >>"%Launcher%"
+echo   powershell -NoProfile -ExecutionPolicy Bypass -WindowStyle Hidden -Command "Start-Process cmd.exe -ArgumentList '/c', ('""%%Target%%""') -WindowStyle Hidden -RedirectStandardOutput ""%DATADIR%\latest.log"" -RedirectStandardError ""%DATADIR%\error.log"""  >>"%Launcher%"
+echo )                                                                                       >>"%Launcher%"
 
 echo Creating shortcut to desktop and start menu
-(
-echo Set oWS = CreateObject("WScript.Shell")
-echo sLinkFile = WScript.Arguments(0)
-echo sTarget = WScript.Arguments(1)
-echo sIcon = WScript.Arguments(2)
-echo Set oLink = oWS.CreateShortcut(sLinkFile)
-echo oLink.TargetPath = sTarget
-echo If sIcon ^<^> "" Then oLink.IconLocation = sIcon
-echo oLink.Save
-) > "%VBSTMPSCRIPT%"
 
-cscript //nologo "%VBSTMPSCRIPT%" "%StartMenu%\%ProgramName%.lnk" %RUNFILE% %ICOFILE%
-cscript //nologo "%VBSTMPSCRIPT%" "%Desktop%\%ProgramName%.lnk" %RUNFILE% %ICOFILE%
+for %%d in ("%StartMenuLnk%" "%DesktopLnk%") do (
+  powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+    "$ws=New-Object -ComObject WScript.Shell; $s=$ws.CreateShortcut('%%~d'); $s.TargetPath='cmd.exe'; $s.Arguments='/C ""%Launcher%""'; if (Test-Path '%ICOFILE%') { $s.IconLocation='%ICOFILE%' }; $s.Save()"
+REM ; $s.WorkingDirectory='%DATADIR%'
+)
+
+del /f /s /q %TMPDIR% >nul
+rmdir /s /q %TMPDIR%
+
+REM ComSpec
+REM C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File "C:\Users\matti\AppData\Roaming\matita008\CPUSim\run.bat
