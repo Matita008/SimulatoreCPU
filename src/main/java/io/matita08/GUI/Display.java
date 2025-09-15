@@ -1,6 +1,6 @@
 package io.matita08.GUI;
 
-import io.matita08.Constants;
+import io.matita08.*;
 import io.matita08.GUI.listeners.Load;
 import io.matita08.data.*;
 import io.matita08.logic.*;
@@ -36,7 +36,8 @@ public class Display extends JFrame {
    JLabel Pointer;
    JLabel Acc;
    JLabel RegB;
-   JLabel PSW;//Program status word //Contains the various flags as a bitmask value
+   JLabel ALU;   //Current ALU state
+   JLabel PSW;   //Program status word //Contains the various flags as a bitmask value
    
    JLabel instruction;
    JLabel phase;
@@ -197,18 +198,18 @@ public class Display extends JFrame {
       
       /*
       *2(+1 x Labels)
-         |  0  |  1  |  2  |  3  |  4  |  5  | 6...10 |
-       0 | PC  |     |     |     |     | MAR |        |
-       1 |     | Pnt |     |     |     |     |        |
-       2 | IR  |     |     |     |     | MDR |        |
-       3 |     |     |     |     |     |     |        |
-       4 |     |     |     |     |     |     |--------|
-       5 |     |     |     |     |     |     |        |
-       6 |     |     |     |     |     |     |        |
-       7 |     |     |     |     |     |     |   CU   |
-       8 |     |     |     |     |     |     |        |
-       9 |     |     |     |     |     |     |        |
-      10 |     |     |     |     |     |     |--------|
+         |   0  |  1  |  2  |  3  |  4  |  5  | 6...10 |
+       0 |  PC  |     |     |     |     | MAR |        |
+       1 |      | Pnt |     |     |     |     |        |
+       2 |  IR  |     |     |     |     | MDR |        |
+       3 |      |     |     |     |     |     |        |
+       4 |      |-----------------------|     |--------|
+       5 |  Acc |                       |     |        |
+       6 |      |                       |     |        |
+       7 |      |         ALU           |     |   CU   |
+       8 | RegB |                       |     |        |
+       9 |      |                       | PSW |        |
+      10 |      |-----------------------|     |--------|
        */
       
       set(gridPosition,0,0,1,1);
@@ -221,7 +222,6 @@ public class Display extends JFrame {
       gridPosition.gridy = 1;
       CPU.add((MAR = createDisplayBox()), gridPosition);
       
-      addLine(set(gridPosition,1,1,6,1), CPU);
       
       //This is here to make the 6th column be filled with the line, not the MAR/MDR textboxes
       CPU.add(new JLabel(), set(gridPosition, 6,2,1,1));
@@ -242,10 +242,14 @@ public class Display extends JFrame {
       gridPosition.gridy = 5;
       CPU.add((MDR = createDisplayBox()), gridPosition);
       
+      gridPosition.weightx = 0.5;
+      gridPosition.weighty = 0.5;
+      addLine(set(gridPosition,1,1,6,1), CPU);
       addLine(set(gridPosition,1,5,6,1), CPU);
-      
       addLine(set(gridPosition, 8, 1, 2,1), CPU);
       addLine(set(gridPosition, 8, 5,1,1), CPU);
+      gridPosition.weightx = 0.1;
+      gridPosition.weighty = 0.1;
       
       updatePR();
       
@@ -263,12 +267,15 @@ public class Display extends JFrame {
       CPU.add(new JLabel("Reg B"), set(gridPosition,0,11,1,1));
       gridPosition.gridy = 12;
       CPU.add((RegB = createDisplayBox()), gridPosition);
-   /*
-   JLabel Acc;
-   JLabel RegB;
-   JLabel PSW;
-    */
       
+      JPanel ALUB = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 20));
+      ALUB.setBorder(titleBorder("ALU"));
+      ALU = createDisplayBox(titleBorder("Op"));
+      ALU.setText("    ");
+      ALU.setMinimumSize(new Dimension(50,5));
+      ALUB.add(ALU);
+      CPU.add(ALUB, set(gridPosition, 2,7,3,7));
+      CPU.add((PSW = createDisplayBox()));
       CPU.add(createCUComponents(), set(gridPosition,6,8,4,6));
    }
    
@@ -418,7 +425,8 @@ public class Display extends JFrame {
    private void updateALU() {//Acc, regB, flags, result, alu op
       Acc.setText(Registers.getAcc().toString());
       RegB.setText(Registers.getRegB().toString());
-      Acc.setText(Registers.getAcc().toString());
+      ALU.setText(ControlUnit.ALUOpcode);
+      PSW.setText(Flags.get());
    }
    
    /**
@@ -440,5 +448,6 @@ public class Display extends JFrame {
    public static void init() {
       if(instance != null) return;  //Ensure only a GUI can be created
       instance = new Display();
+      swingThread.setUncaughtExceptionHandler(new ExceptionHandler(true));
    }
 }

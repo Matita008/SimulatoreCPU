@@ -1,7 +1,7 @@
 package io.matita08.logic;
 
+import io.matita08.*;
 import io.matita08.GUI.*;
-import io.matita08.Utils;
 import io.matita08.data.*;
 import io.matita08.value.Value;
 
@@ -33,6 +33,7 @@ public class Execution {
    }
    
    public static void fetch() {
+      ControlUnit.ALUOpcode = "";
       setMarR(Registers.pc().getAndInc());
       Registers.setIr(Registers.getMDR());
       ControlUnit.next = Phase.Decode;
@@ -63,5 +64,10 @@ public class Execution {
    
    public static void step(ActionEvent ignored) {
       Utils.runOnNewThread(Execution::step);
+   }
+   
+   public static void readPointer(int cycle){
+      if(cycle < 0 || cycle > Constants.getAddressSize()) throw new AssertionError("An error occurred\nDetails:\treadPointer cycle is OOB, value: " + cycle);
+      
    }
 }

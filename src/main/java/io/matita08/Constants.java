@@ -145,8 +145,10 @@ public final class Constants {
     * Exception used to segnalate a parsing error occurred like wrong type passed, no value
     */
    private static class ParserException extends Throwable {
-      ParserException(){ super(); }
-      ParserException(String message){ super(message); }
+      /**
+       * {@inheritDoc}
+       * @see io.matita08.Constants#init(String[])
+       */
       ParserException(String message, Throwable cause){ super(message, cause); }
    }
    

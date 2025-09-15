@@ -50,6 +50,11 @@ public class UndefinedSingleValue extends Value implements Cloneable{
    }
    
    @Override
+   public String toString() {
+      return "?";
+   }
+   
+   @Override
    public boolean equals(int n) {
       return false;
    }

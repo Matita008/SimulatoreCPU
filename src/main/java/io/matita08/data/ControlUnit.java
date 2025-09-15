@@ -9,4 +9,5 @@ public class ControlUnit {
    public static Phase next = Phase.Fetch;
    public static int currentCycle = -1;
    public static int totalCycles = -1;
+   public static String ALUOpcode = "";
 }

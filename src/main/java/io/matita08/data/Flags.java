@@ -11,7 +11,15 @@ public class Flags {
     * It defaults to a random state
     */
    private static int flags = Utils.rng.nextInt();
+   private static boolean set = false;
    
+   /**
+    * Get the string representation of all flags
+    * @return the bitmask of all the flags if any flag was set as a string or a question mark if on flag was ever set/unset
+    */
+   public static String get() {
+      return set ? Integer.toString(flags, Constants.getRadix()) : "?";
+   }
    /**
     *
     * @param flag the {@link FlagsConstants flag} to retrive
@@ -45,7 +53,12 @@ public class Flags {
     * @param value the new state of the flag
     */
    public static void set(int flag, boolean value) {
-      if(value) flags = flags | flag;
-      else if((flags & flag) == flag) flags = flags - flag;
+      if(set) {
+         if(value) flags = flags | flag;
+         else if((flags & flag) == flag) flags = flags - flag;
+      } else {
+         set = true;
+         flags = flag;
+      }
    }
 }
