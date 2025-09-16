@@ -1,0 +1,66 @@
+name: Bug report
+description: The type of device you were playing on
+labels: ["bug"]
+
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platforms
+      description: On what platforms do you know the bug happens?
+      multiple: false
+      options:
+        - Windows
+        - Mac
+        - Linux
+        - Other (please specify below)
+    validations:
+      required: true
+  - type: input
+    id: build
+    attributes:
+      label: Release version
+      description: If you're building it from the source provide the commit
+      placeholder: 
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: Issue
+      description: Explain your issue in detail.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: How you happened across the issue, and what exactly you did to make the bug happen.
+    validations:
+      required: true
+  - type: textarea
+    id: save-file
+    attributes:
+      label: Save file
+      description: The program file used
+      placeholder: Not required, but if you provide your program (or a snippet) it doesn't hurt and it's much appreciated
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: logs
+      description: The latest log, if installed using the installer it will be in %AppData%\matita008\CPUSim, please upload both latest.log **and** error.log
+      placeholder: ALWAYS REQUIRED
+    validations:
+      required: false
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Submission
+      description: Check the boxes to confirm that you have read the lines below.
+      options:
+        - label: I have updated to the latest release (https://github.com/Matita008/SimulatoreCPU/releases) to make sure my issue has not been fixed.
+          required: true
+        - label: I have searched the closed and open issues to make sure that this problem has not already been reported.
+          required: true
