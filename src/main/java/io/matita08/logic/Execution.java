@@ -28,7 +28,7 @@ public class Execution {
       ControlUnit.next.run();
       ControlUnit.currentCycle--;
       stepped = true;
-      SwingUtilities.invokeLater(Display::update);
+      Utils.runOnNewThread(Display::update);
       return true;
    }
    

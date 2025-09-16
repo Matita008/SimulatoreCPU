@@ -8,7 +8,10 @@ public abstract class Value {
    
    public static Value getNew() {return nullValue.clone();}
    
-   public static Value getNewAddress() {return new DoubleValue(getNew(), getNew());}
+   public static Value getNewAddress() {
+      if(Constants.getAddressSize() == 2) return new DoubleValue(getNew(), getNew());
+      else return new DoubleValue(getNew());
+   }
    
    public static Value create(int n) {return new SingleValue(n);}
    

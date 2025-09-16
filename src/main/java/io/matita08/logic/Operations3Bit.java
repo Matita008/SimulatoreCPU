@@ -1,5 +1,6 @@
 package io.matita08.logic;
 
+import io.matita08.Constants;
 import io.matita08.data.Registers;
 import io.matita08.value.*;
 
@@ -7,24 +8,39 @@ import java.util.function.Consumer;
 
 @SuppressWarnings("unused")  //Loaded with reflection
 public enum Operations3Bit {//Using prof default table
-   sto(0, n->{}, 1 + Operation.getAddressSize()),                       //TODO
-   load(1, n->{}, 1 + Operation.getAddressSize()),                      //TODO
+   sto(0, n->{
+      if(n != 1) Operation.readPointer(n);
+      else Registers.setMC(Registers.getPointer(), Registers.getAcc());
+   }, 1 + Operation.getAddressSize()),
+   
+   load(1, n->{
+      if(n != 1) Operation.readPointer(n);
+      else Registers.setAcc(Registers.getMC(Registers.getPointer()));
+   }, 1 + Operation.getAddressSize()),
+   
    out(2, n->{Registers.setBufOut(Registers.getAcc());}, 1),
    in(3, n->{Registers.setAcc(Registers.getBufIn());}, 1),
+   
    add(4, n->{
+      Registers.setOverflow(Registers.getAcc().get() + Registers.getRegB().get() > Constants.getValueMax());
       Registers.setAcc(Registers.getAcc().add(Registers.getRegB()));
-      Registers.setZero(Registers.getRegB().equals(0));
+      Registers.setZero(Registers.getAcc().equals(0));
    }, 1),
+   
    set(5, n->Registers.setRegB(Registers.getAcc()), 1),
+   
    jpz(6, n->{
       if(n == Operation.getAddressSize() + 1) {
-         if(Registers.getZero()) Registers.pc().add(new SingleValue(2, false)); //TODO
+         if(Registers.getZero()) {
+            Registers.pc().add(new SingleValue(2, false));
+            Operation.setRemainingCycles(1);
+         }
          else Operation.readPointer(n);
-      } else if(n != 1) Operation.readPointer(n);
-      else {
-         Registers.pc().set(Registers.getPointer());
       }
+      else if(n != 1) Operation.readPointer(n);
+      else Registers.pc().set(Registers.getPointer());
    }, 1 + Operation.getAddressSize()),
+   
    Halt(7, n->{}, 1),
    Unknown(n->{},1);
    

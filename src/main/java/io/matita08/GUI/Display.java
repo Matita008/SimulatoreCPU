@@ -45,6 +45,10 @@ public class Display extends JFrame {
    JLabel cycle;
    JLabel remaining;
    
+   JLabel bufIn;
+   JLabel bufOut;
+   JLabel display;
+   
    //Control panel related components
    JButton load;
    
@@ -169,22 +173,22 @@ public class Display extends JFrame {
       gridPosition.gridx = 0;      //start column
       gridPosition.gridy = 5;      //start row
       gridPosition.gridheight = 1; //row span
-      gridPosition.gridwidth = 3;  //column span
+      gridPosition.gridwidth = 1;  //column span
       gridPosition.ipadx = 1;      //padding (x-axis)
       gridPosition.ipady = 3;      //padding (y-axis)
       gridPosition.weighty = 0.6;  //distribution of extra space (y-axis)
       createControlPanelComponents();
       main.add(controlPanel, gridPosition);
       
-      interfaces = new JPanel();
-      gridPosition.gridx = 3;      //start column
-      gridPosition.gridy = 3;      //start row
+      interfaces = new JPanel(new GridBagLayout());
+      gridPosition.gridx = 2;      //start column
+      gridPosition.gridy = 5;      //start row
       gridPosition.gridheight = 3; //row span
       gridPosition.gridwidth = 3;  //column span
       gridPosition.ipadx = 2;      //padding (x-axis)
       gridPosition.ipady = 3;      //padding (y-axis)
       gridPosition.weighty = 0.6;  //distribution of extra space (y-axis)
-      interfaces.add()
+      createInterfaceComponents();
       main.add(interfaces, gridPosition);
    }
    
@@ -296,7 +300,7 @@ public class Display extends JFrame {
       CPU.add(createCUComponents(), set(gridPosition,6,8,4,6));
    }
    
-   //
+   //Control unit components
    private Component createCUComponents() {
       JPanel CU = new JPanel(new GridLayout(6,2,4,2));
       CU.setBorder(titleBorder("Control Unit"));
@@ -341,7 +345,7 @@ public class Display extends JFrame {
       busLabels.add(new JLabel());
    }
    
-   //Create the Centra Memory GUI
+   //Create the Central Memory GUI
    private void createMCComponents() {
       MC.add(new JLabel("Addresses  ", SwingConstants.RIGHT));
       MC.add(new JLabel(" Values", SwingConstants.LEFT));
@@ -370,6 +374,69 @@ public class Display extends JFrame {
       update.setVisible(false);
    }
    
+   private void createInterfaceComponents() {
+      //create numpad
+      JPanel numpad = new JPanel(new GridLayout(4, 3));
+      JButton key;//Tmp variable to store numpad keys
+      for(int i = 2; i >= 0; i--){
+         for(int j = 1; j <= 3; j++) {
+            int num = i*3+j;
+            key = new JButton(String.valueOf(num));
+            key.addActionListener(e -> {
+               Registers.setBufIn(new SingleValue(num, false));
+               updateBuf();
+            });
+            numpad.add(key);
+         }
+      }
+      key = new JButton("0");
+      key.addActionListener(e ->{
+         Registers.setBufIn(new SingleValue(0, false));
+         updateBuf();
+      });
+      numpad.add(new JLabel());
+      numpad.add(key);
+      numpad.setBorder(titleBorder("Numpad"));
+      
+      JPanel bufInterfaces = new JPanel();
+      bufInterfaces.setBorder(titleBorder("I/O Interfaces"));
+      
+      bufInterfaces.add(new JLabel("Buffer out"));
+      bufInterfaces.add((bufOut = createDisplayBox()));
+      
+      bufInterfaces.add(new JLabel());
+      
+      bufInterfaces.add(new JLabel("Buffer in"));
+      bufInterfaces.add((bufIn = createDisplayBox()));
+      
+      GridBagConstraints gbc = new GridBagConstraints();
+      gbc.weightx = 0.3;
+      gbc.weighty = 0.3;
+      gbc.fill = GridBagConstraints.BOTH;
+      
+      interfaces.add(bufInterfaces, set(gbc, 0,0,5,1));
+      
+      JPanel displayPane = new JPanel(new GridLayout(2,1));
+      displayPane.setBorder(displayBorder());
+      
+      displayPane.add(new JLabel("Display"));
+      displayPane.add((display = createDisplayBox()));
+      display.setText("      ");
+      
+      gbc.weightx = 0.1;
+      gbc.weighty = 0.1;
+      interfaces.add(displayPane, set(gbc, 0,1,1,1));
+      
+      gbc.weightx = 0.2;
+      gbc.weighty = 0.2;
+      interfaces.add(new JLabel(), set(gbc, 0,2,1,1));
+      interfaces.add(new JLabel(), set(gbc, 0,3,1,1));
+      interfaces.add(new JLabel(), set(gbc, 1,1,1,1));
+      
+      interfaces.add(numpad, set(gbc, 3,1,1,3));
+      updateBuf();
+   }
+   
    /**
     * Update the GUI
     * If the current thread is the swing event thread it will get run immediately, else it will wait for the swing thread to execute the update
@@ -390,6 +457,7 @@ public class Display extends JFrame {
       if((Registers.modFlag & 1) == 1) instance.updateMC();
       if((Registers.modFlag & 2) == 2) instance.updatePR();
       if((Registers.modFlag & 4) == 4) instance.updateALU();
+      if((Registers.modFlag & 8) == 8) instance.updateBuf();
    }
    
    /**
@@ -450,6 +518,15 @@ public class Display extends JFrame {
       RegB.setText(Registers.getRegB().toString());
       ALU.setText(ControlUnit.ALUOpcode);
       PSW.setText(Flags.get());
+   }
+   
+   /**
+    * Function to update the visual part of the Control Unit
+    */
+   private void updateBuf() {
+      bufIn.setText(Registers.getBufIn().toString());
+      bufOut.setText(Registers.getBufOut().toString());
+      display.setText(Registers.getBufOut().toString());
    }
    
    /**

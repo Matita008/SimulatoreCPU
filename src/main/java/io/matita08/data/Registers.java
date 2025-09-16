@@ -120,6 +120,7 @@ public final class Registers {
    }
    
    public static void setBufIn(Value bufIn) {
+      modFlag = 8 | modFlag;
       Registers.bufIn = bufIn;
    }
    
@@ -128,6 +129,7 @@ public final class Registers {
    }
    
    public static void setBufOut(Value bufOut) {
+      modFlag = 8 | modFlag;
       Registers.bufOut = bufOut;
    }
    
@@ -137,5 +139,13 @@ public final class Registers {
    
    public static void setZero(boolean zero) {
       Flags.set(FlagsConstants.ZERO, zero);
+   }
+   
+   public static boolean getOverflow() {
+      return Flags.get(FlagsConstants.OVERFLOW);
+   }
+   
+   public static void setOverflow(boolean overflow) {
+      Flags.set(FlagsConstants.OVERFLOW, overflow);
    }
 }
