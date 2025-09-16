@@ -6,7 +6,7 @@ import io.matita08.value.*;
 
 import java.util.function.Consumer;
 
-@SuppressWarnings("unused")  //Loaded with reflection
+@SuppressWarnings({"unused", "CodeBlock2Expr"})  //Loaded with reflection, Please keep code blocks, so if i want to edit i know how
 public enum Operations3Bit {//Using prof default table
    sto(0, n->{
       if(n != 1) Operation.readPointer(n);

@@ -101,14 +101,6 @@ public class Display extends JFrame {
       container.add(new Line(), gbc);
    }
    
-   private void addSpace(GridBagConstraints gbc, Container container){
-      container.add(new JSeparator(), gbc);
-   }
-   /*
-   private JLabel createTitledDisplayBox(String title) {
-     return createDisplayBox(titleBorder(title));
-     }//*/
-   
    private JLabel createDisplayBox(Border b) {
       JLabel l = new JLabel();
       l.setBackground(Color.white);

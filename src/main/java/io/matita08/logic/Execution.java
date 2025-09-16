@@ -5,12 +5,9 @@ import io.matita08.GUI.*;
 import io.matita08.data.*;
 import io.matita08.value.Value;
 
-import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 
 public class Execution {
-   private static final int MAX_CYCLES = 3;
-   
    public static boolean stepped = false;
    
    public static void step(int countMax) {
