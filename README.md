@@ -1,4 +1,8 @@
-# How to install:
+## Building
+./gradlew
+
+## [Report a bug here](https://github.com/Matita008/SimulatoreCPU/issues/new?template=bug_report.yml)
+## How to install:
 **Windows (Using batch):**
 - Go to releases/Download
 - Download Installer.bat
@@ -12,8 +16,8 @@
 - Install the jar from the latest release
 - Run it
 
-### Future plans:
+## Future plans:
 - Complete io.matita08.logic.Operations4Bit 
 - Redesign UI
 - Clean messy code
-- Add a compiler from assembly to machine cod
+- Add a compiler from assembly to machine code
