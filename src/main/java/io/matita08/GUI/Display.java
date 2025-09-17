@@ -275,10 +275,10 @@ public class Display extends JFrame {
       for(int i = 0; i < 3*2 -1; i++) ALUB.add(new JLabel());
       
       ALUB.setBorder(titleBorder("ALU"));
-      ALUB.setMinimumSize(new Dimension(175, 200));
+      ALUB.setMinimumSize(new Dimension(200, 200));
       ALU = createDisplayBox(titleBorder("Op"));
-      ALU.setText("    ");
-      ALU.setMinimumSize(new Dimension(50,5));
+      ALU.setMinimumSize(new Dimension(60,5));
+      ALU.setPreferredSize(new Dimension(45,25));
       ALUB.add(ALU);
       
       CPU.add(ALUB, set(gridPosition, 2,7,3,7));
@@ -290,6 +290,8 @@ public class Display extends JFrame {
       CPU.add((PSW = createDisplayBox()), gridPosition);
       
       CPU.add(createCUComponents(), set(gridPosition,6,8,4,6));
+      
+      updateALU();
    }
    
    //Control unit components

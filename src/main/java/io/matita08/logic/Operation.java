@@ -1,7 +1,8 @@
 package io.matita08.logic;
 
 import io.matita08.Constants;
-import io.matita08.data.ControlUnit;
+import io.matita08.data.*;
+import io.matita08.value.Value;
 
 import java.lang.reflect.*;
 import java.util.function.Consumer;
@@ -71,6 +72,20 @@ public class Operation {
    
    public static void readPointer(int cycle) {
       Execution.readPointer(cycle);
+   }
+   
+   public static void setMC(Value address, Value value) {
+      Registers.setMAR(address);
+      Registers.setMDR(value);
+      Registers.setMC(address, value);
+   }
+   
+   public static void readMC(Value address) {
+      Execution.setMarR(address);
+   }
+   
+   public static Value getAndIncPc(){
+      return Execution.next();
    }
    
    public static void setRemainingCycles(int remaining) {

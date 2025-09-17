@@ -6,16 +6,19 @@ import io.matita08.value.*;
 
 import java.util.function.Consumer;
 
-@SuppressWarnings({"unused", "CodeBlock2Expr"})  //Loaded with reflection, Please keep code blocks, so if i want to edit i know how
+@SuppressWarnings({"unused", "CodeBlock2Expr"})  //Loaded with reflection, Please keep code blocks, so if I want to edit I know how
 public enum Operations3Bit {//Using prof default table
    sto(0, n->{
-      if(n != 1) Operation.readPointer(n);
-      else Registers.setMC(Registers.getPointer(), Registers.getAcc());
+      if(n != 1) Operation.readPointer(n - 1);
+      else Operation.setMC(Registers.getPointer(), Registers.getAcc());
    }, 1 + Operation.getAddressSize()),
    
    load(1, n->{
-      if(n != 1) Operation.readPointer(n);
-      else Registers.setAcc(Registers.getMC(Registers.getPointer()));
+      if(n == 1) {
+         Operation.readMC(Registers.getPointer());
+         Registers.setAcc(Registers.getMDR());
+      }
+      else Operation.readPointer(n - 1);
    }, 1 + Operation.getAddressSize()),
    
    out(2, n->{Registers.setBufOut(Registers.getAcc());}, 1),
@@ -32,12 +35,12 @@ public enum Operations3Bit {//Using prof default table
    jpz(6, n->{
       if(n == Operation.getAddressSize() + 1) {
          if(Registers.getZero()) {
-            Registers.pc().add(new SingleValue(2, false));
+            Registers.pc().add(new SingleValue(Operation.getAddressSize(), false));
             Operation.setRemainingCycles(1);
          }
-         else Operation.readPointer(n);
+         else Operation.readPointer(n - 1);
       }
-      else if(n != 1) Operation.readPointer(n);
+      else if(n != 1) Operation.readPointer(n - 1);
       else Registers.pc().set(Registers.getPointer());
    }, 1 + Operation.getAddressSize()),
    
@@ -58,6 +61,7 @@ public enum Operations3Bit {//Using prof default table
    public Operation get() {
       return wrapper;
    }
+   
    public static Operation getHalt() {
       return Halt.wrapper;
    }

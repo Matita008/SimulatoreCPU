@@ -47,9 +47,11 @@ public class DoubleValue extends Value {
       if(va instanceof DoubleValue dv) {
          v[0] = dv.v[0];
          if(v.length == 2) v[1] = dv.v[1];
+         return;
       } else if(va instanceof UndefinedSingleValue){
          v[0] = Value.getNew();
          if(v.length == 2) v[1] = Value.getNew();
+         return;
       }
       assert va instanceof SingleValue;
       SingleValue sv = (SingleValue)va;
