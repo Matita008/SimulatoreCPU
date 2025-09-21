@@ -35,7 +35,8 @@ public enum Operations3Bit {//Using prof default table
    jpz(6, n->{
       if(n == Operation.getAddressSize() + 1) {
          if(Registers.getZero()) {
-            Registers.pc().add(new SingleValue(Operation.getAddressSize(), false));
+            Registers.pc().getAndInc();
+            Registers.pc().getAndInc();
             Operation.setRemainingCycles(1);
          }
          else Operation.readPointer(n - 1);
