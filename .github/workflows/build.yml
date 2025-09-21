@@ -32,7 +32,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: |
-          icon24.ico
+          logo24.ico
           build/dist/simulatoreCPU.jar
         overwrite_files: false
         draft: true
