@@ -12,7 +12,33 @@ import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+/**
+ * Main graphical user interface for the CPU Simulator application.
+ * This class provides a comprehensive visual representation of a simulated CPU,
+ * including CPU registers, central memory, control unit, ALU, and I/O interfaces.
+ *
+ * <p>The Display class extends JFrame and creates a detailed simulation environment
+ * with the following major components:</p>
+ * <ul>
+ *   <li><strong>CPU Section:</strong> Shows registers (PC, IR, MAR, MDR, Pointer, Acc, RegB),
+ *       ALU operations, and Program Status Word (PSW)</li>
+ *   <li><strong>Central Memory:</strong> Scrollable view of memory addresses and their values</li>
+ *   <li><strong>Control Unit:</strong> Displays current instruction, execution phases, and cycle information</li>
+ *   <li><strong>I/O Interfaces:</strong> Input/output buffers, display, and numeric keypad for user interaction</li>
+ *   <li><strong>Control Panel:</strong> Buttons for stepping through execution and loading files</li>
+ * </ul>
+ *
+ * <p>This class follows the Singleton pattern to ensure only one display instance exists.
+ * All GUI updates are thread-safe and executed on the Swing Event Dispatch Thread.</p>
+ *
+ * @author Matita008
+ * @version 1.0
+ * @since 1.0
+ */
 public class Display extends JFrame {
+   /**
+    * Singleton instance of the Display window.
+    */
    public static Display instance;
    
    /**
@@ -21,40 +47,140 @@ public class Display extends JFrame {
    private static Thread swingThread;
    
    //JPanels attached directly to the main panel
+   /**
+    * Main container panel using GridBagLayout for component organization.
+    */
    JPanel main;
+   
+   /**
+    * Panel containing the central memory display with scrollable memory addresses.
+    */
    JPanel MC;
+   
+   /**
+    * Panel containing bus labels for address and data bus indicators.
+    */
    JPanel busLabels;
+   
+   /**
+    * Panel containing I/O interfaces including buffers, display, and numpad.
+    */
    JPanel interfaces;
+   
+   /**
+    * Panel containing control buttons for simulation operations.
+    */
    JPanel controlPanel;
+   
+   /**
+    * Panel containing all CPU-related components and registers.
+    */
    JPanel CPU;
    
    //CPU related components
+   /**
+    * Label displaying the Program Counter (PC) register value.
+    */
    JLabel PC;
+   
+   /**
+    * Label displaying the Instruction Register (IR) value.
+    */
    JLabel IR;
+   
+   /**
+    * Label displaying the Memory Address Register (MAR) value.
+    */
    JLabel MAR;
+   
+   /**
+    * Label displaying the Memory Data Register (MDR) value.
+    */
    JLabel MDR;
+   
+   /**
+    * Label displaying the Pointer register value.
+    */
    JLabel Pointer;
+   
+   /**
+    * Label displaying the Accumulator (Acc) register value.
+    */
    JLabel Acc;
+   
+   /**
+    * Label displaying the Register B (RegB) value.
+    */
    JLabel RegB;
+   
+   /**
+    * Label displaying the current ALU operation state.
+    */
    JLabel ALU;   //Current ALU state
+   
+   /**
+    * Label displaying the Program Status Word containing CPU flags as a bitmask value.
+    */
    JLabel PSW;   //Program status word //Contains the various flags as a bitmask value
    
+   /**
+    * Label displaying the current instruction being executed.
+    */
    JLabel instruction;
+   
+   /**
+    * Label displaying the current execution phase.
+    */
    JLabel phase;
+   
+   /**
+    * Label displaying the next execution phase.
+    */
    JLabel nextPhase;
+   
+   /**
+    * Label displaying the total number of execution cycles.
+    */
    JLabel cycle;
+   
+   /**
+    * Label displaying the remaining execution cycles.
+    */
    JLabel remaining;
    
+   /**
+    * Label displaying the input buffer value.
+    */
    JLabel bufIn;
+   
+   /**
+    * Label displaying the output buffer value.
+    */
    JLabel bufOut;
+   
+   /**
+    * Label displaying the current display output value.
+    */
    JLabel display;
    
    //Control panel related components
+   /**
+    * Button for loading program files into the simulator.
+    */
    JButton load;
    
    //MC related components
+   /**
+    * List of labels representing memory data values, indexed by memory address.
+    * Each label corresponds to a memory location in the central memory.
+    */
    ArrayList<JLabel> MCData = new ArrayList<>(Constants.getMCSize());
    
+   /**
+    * Private constructor implementing the Singleton pattern.
+    * Initializes the main window, creates all GUI components, and sets up the layout.
+    * The window is configured with proper title, close operation, and visibility.
+    */
    private Display() {
       super("Simulator");
       main = new JPanel(new GridBagLayout());
@@ -80,15 +206,35 @@ public class Display extends JFrame {
       return BorderFactory.createCompoundBorder(tb, new EmptyBorder(5, 5, 5, 5));
    }
    
+   /**
+    * Creates a border suitable for display components with subtle styling.
+    *
+    * @return a compound border with line border and padding
+    */
    private Border displayBorder() {
       Border b = BorderFactory.createLineBorder(new Color(0.15f, 0.15f,0.15f));
       return BorderFactory.createCompoundBorder(b, new EmptyBorder(3, 1, 2, 5));
    }
    
+   /**
+    * Creates a display box with the default display border.
+    *
+    * @return a new JLabel configured as a display box
+    */
    private JLabel createDisplayBox(){
       return createDisplayBox(displayBorder());
    }
    
+   /**
+    * Helper method to set GridBagConstraints values in a single call.
+    *
+    * @param gbc the GridBagConstraints object to modify
+    * @param x the gridx value
+    * @param y the gridy value
+    * @param width the gridwidth value
+    * @param height the gridheight value
+    * @return the modified GridBagConstraints object for method chaining
+    */
    private GridBagConstraints set(GridBagConstraints gbc, int x, int y, int width, int height){
       gbc.gridx = x;
       gbc.gridy = y;
@@ -97,10 +243,23 @@ public class Display extends JFrame {
       return gbc;
    }
    
+   /**
+    * Adds a graphical Line component to the specified container at the given grid position.
+    *
+    * @param gbc the grid bag constraints specifying the position
+    * @param container the container to add the line to
+    */
    private void addLine(GridBagConstraints gbc, Container container){
       container.add(new Line(), gbc);
    }
    
+   /**
+    * Creates a display box (JLabel) with the specified border.
+    * The label is configured with white background and opaque setting.
+    *
+    * @param b the border to apply to the display box
+    * @return a configured JLabel suitable for displaying values
+    */
    private JLabel createDisplayBox(Border b) {
       JLabel l = new JLabel();
       l.setBackground(Color.white);
@@ -109,6 +268,11 @@ public class Display extends JFrame {
       return l;
    }
    
+   /**
+    * Creates and arranges all main GUI components using GridBagLayout.
+    * This method sets up the overall structure of the simulator interface,
+    * including CPU, memory, control panels, and I/O interfaces.
+    */
    //Create the GUI components
    private void createMainComponents() {
       GridBagConstraints gridPosition = new GridBagConstraints();
@@ -184,6 +348,13 @@ public class Display extends JFrame {
       main.add(interfaces, gridPosition);
    }
    
+   /**
+    * Creates all CPU-related GUI components including registers, ALU, and control unit.
+    * This method arranges the CPU components in a complex grid layout that visually
+    * represents the internal structure of the simulated processor.
+    *
+    * @param CPU the container panel to add CPU components to
+    */
    //Create the CPU GUI
    private void createCPUComponents(Container CPU) {
       GridBagConstraints gridPosition = new GridBagConstraints();
@@ -294,6 +465,12 @@ public class Display extends JFrame {
       updateALU();
    }
    
+   /**
+    * Creates the Control Unit components including instruction display,
+    * phase information, and cycle counters.
+    *
+    * @return a JPanel containing all control unit display components
+    */
    //Control unit components
    private Component createCUComponents() {
       JPanel CU = new JPanel(new GridLayout(6,2,4,2));
@@ -327,6 +504,10 @@ public class Display extends JFrame {
       return CU;
    }
    
+   /**
+    * Creates bus indicator labels showing address and data bus directions.
+    * These labels provide visual indication of bus activity in the simulation.
+    */
    //Literally 2 labels
    private void createBusComponents() {
       busLabels.add(new JLabel());
@@ -339,6 +520,10 @@ public class Display extends JFrame {
       busLabels.add(new JLabel());
    }
    
+   /**
+    * Creates the Central Memory display showing memory addresses and their values.
+    * The memory is displayed in a scrollable format with address->value pairs.
+    */
    //Create the Central Memory GUI
    private void createMCComponents() {
       MC.add(new JLabel("Addresses  ", SwingConstants.RIGHT));
@@ -352,6 +537,10 @@ public class Display extends JFrame {
       }
    }
    
+   /**
+    * Creates control panel buttons for simulation operations.
+    * Includes step execution, file loading, and update buttons.
+    */
    //Create the buttons in the bottom left GUI
    private void createControlPanelComponents() {
       JButton step = new JButton("Step");
@@ -368,6 +557,10 @@ public class Display extends JFrame {
       update.setVisible(false);
    }
    
+   /**
+    * Creates I/O interface components including buffers, display, and numeric keypad.
+    * The keypad allows users to input values into the buffer for program interaction.
+    */
    private void createInterfaceComponents() {
       //create numpad
       JPanel numpad = new JPanel(new GridLayout(4, 3));
@@ -446,6 +639,11 @@ public class Display extends JFrame {
       }
    }
    
+   /**
+    * Internal implementation of GUI updates based on modification flags.
+    * This method selectively updates different sections of the GUI based on
+    * which components have been modified since the last update.
+    */
    private void updateImpl() {
       if(Execution.stepped) instance.updateCU();
       if((Registers.modFlag & 1) == 1) instance.updateMC();
@@ -484,7 +682,7 @@ public class Display extends JFrame {
          else {   //I don't like the else case being larger than the if one, but inverting them looks so bad, so I'll stick with this abomination
             int n = v.get();
             if(n < 10) s = " ";  //Bad padding logic, ik.
-            //else if(n < 100) s = " ";//if uncommented the string in the line above shall have 2 spaces, else only one
+               //else if(n < 100) s = " ";//if uncommented the string in the line above shall have 2 spaces, else only one
             else s = "";
             s += String.valueOf(n);
          }
@@ -501,7 +699,7 @@ public class Display extends JFrame {
       Pointer.setText(Registers.getPointer().toString());
       MDR.setText(Registers.getMDR().toString());
       IR.setText(Registers.getIr().toString());
-   
+      
    }
    
    /**
