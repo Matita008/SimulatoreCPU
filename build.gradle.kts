@@ -7,7 +7,6 @@ plugins {
 }
 
 group = "io.matita08"
-version = "1.13.4"
 
 repositories {
     mavenCentral()
@@ -31,7 +30,7 @@ val normJar = // Same mainclass as the application plugin setting
     tasks.register("normJar", type = Jar::class, configurationAction = fun Jar.() {
         manifest {
             attributes["Implementation-Title"] = "CPUSim"
-            attributes["Implementation-Version"] = version
+            attributes["Implementation-Version"] = "1.13.7" //Manifest
             attributes["Main-Class"] = "io.matita08.Main" // Same mainclass as the application plugin setting
         }
         with(tasks.jar.get() as CopySpec)
