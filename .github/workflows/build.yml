@@ -24,7 +24,7 @@ jobs:
     - name: Build with Gradle Wrapper
       run: ./gradlew build
       
-    #- name: Draft new build
+    - name: Draft new build
     - uses: softprops/action-gh-release@v2
       with:
         files: |
