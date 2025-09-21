@@ -53,6 +53,7 @@ public class Main {
     * @see Constants#init(String[])
     */
    public static void main(String[] args) {
+      if(Constants.init(args)) return;
       System.out.println("[DEBUG] Stdout stream: " + System.out);
       System.out.println("[DEBUG] Error stream: " + System.err);
       System.out.println("[DEBUG] File stream: " + ExceptionHandler.logStream);
@@ -62,7 +63,6 @@ public class Main {
       ExceptionHandler.logStream.println("[DEBUG] Stdout stream: " + System.out);
       ExceptionHandler.logStream.println("[DEBUG] Error stream: " + System.err);
       ExceptionHandler.logStream.println("[DEBUG] File stream: " + ExceptionHandler.logStream);
-      if(Constants.init(args)) return;
       SwingUtilities.invokeLater(Display::init);
       Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(false));
    }

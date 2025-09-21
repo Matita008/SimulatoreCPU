@@ -2,7 +2,6 @@ package io.matita08.logic;
 
 import io.matita08.Constants;
 import io.matita08.data.Registers;
-import io.matita08.value.*;
 
 import java.util.function.Consumer;
 
